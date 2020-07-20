@@ -32,7 +32,7 @@ the value of the inverse modulus corresponding to the treated observations.
 \code{bc} and \code{delta_c} give the analogous values for the control observations.
 }
 \description{
-Calculates the modulus of continuity for the RDD problem.
+Calculates the modulus of continuity for the RD parameter.
 }
 \examples{
 n <- 500
