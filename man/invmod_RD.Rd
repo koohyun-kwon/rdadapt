@@ -11,17 +11,17 @@ invmod_RD(b, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE)
 
 \item{C_pair}{a pair of smoothness parameters \eqn{(C, C')}.}
 
-\item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units}
+\item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
-\item{Xc}{\eqn{n_c} by \eqn{k} design matrix for the control units}
+\item{Xc}{\eqn{n_c} by \eqn{k} design matrix for the control units.}
 
-\item{mon_ind}{index number for monotone variables}
+\item{mon_ind}{index number for monotone variables.}
 
 \item{sigma_t}{standard deviation of the error term for the treated units
-(either length 1 or \eqn{n_t})}
+(either length 1 or \eqn{n_t}).}
 
 \item{sigma_c}{standard deviation of the error term for the control units
-##' (either length 1 or \eqn{n_c})}
+(either length 1 or \eqn{n_c}).}
 
 \item{swap}{indicator for whether we take (C', C) instead of (C, C').}
 }
