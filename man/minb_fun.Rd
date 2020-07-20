@@ -7,7 +7,7 @@
 minb_fun(C_pair, X, mon_ind, swap = FALSE)
 }
 \arguments{
-\item{C_pair}{C_pair a pair of smoothness parameters \eqn{(C, C')}.}
+\item{C_pair}{a pair of smoothness parameters \eqn{(C, C')}.}
 
 \item{X}{A data matrix.}
 
