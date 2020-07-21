@@ -173,7 +173,9 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
 #' @inheritParams cov_mat_calc
 #' @inheritParams max_Q
 #' @param delta_init the value of \eqn{\delta} to be used in simulating the quantile;
-#' theoretically, its value does not matter asymptotically.
+#' theoretically, its value does not matter asymptotically. Its default value is 1.96.
+#' @param hmat_init the matrix of modulus values corresponding to \code{delta_init}
+#' and \code{Cvec}; it can be left unspecified.
 #'
 #' @return a list of two values, \code{del_sol}, the proper value of \eqn{\delta} to be used
 #' for individual CIs, and \code{tau_sol}, the non-coverage probability associated with the
@@ -190,22 +192,25 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' tau_sol((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
-tau_sol <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                    num_sim = 10^4, delta_init = 1.96){
+#' tau_calc((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
+                    num_sim = 10^4, delta_init = 1.96, hmat_init){
 
   J <- length(Cvec)
   Cbar <- max(Cvec)
 
-  hmat_init <- matrix(0, nrow = J, ncol = 2)
+  if(missing(hmat_init)){
 
-  for(j in 1:J){
+    hmat_init <- matrix(0, nrow = J, ncol = 2)
 
-    Cj <- Cvec[j]
+    for(j in 1:J){
 
-    hres_j <- bw_adpt(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    hmat_init[j, 1] <- hres_j$ht
-    hmat_init[j, 2] <- hres_j$hc
+      Cj <- Cvec[j]
+
+      hres_j <- bw_adpt(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat_init[j, 1] <- hres_j$ht
+      hmat_init[j, 2] <- hres_j$hc
+    }
   }
 
   covmat <- cov_mat_calc(delta_init, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
@@ -216,16 +221,81 @@ tau_sol <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
   return(res)
 }
 
-# CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-#                     hmat_init, num_sim = 10^4, delta_init = 1.96){
-#
-#
-#
-#   resvec <- numeric(J)
-#   for(j in 1:J){
-#
-#     Cj <- Cvec[j]
-#     resvec[j] <- c_hat_lower_RD(del_sol, Cj, Cbar, Xt, Xc, mon_ind,
-#                                 sigma_t, sigma_c, Yt, Yc, tau_sol)
-#   }
-# }
+#' Lower Adaptive Confidence Interval
+#'
+#' Calculates the value of the lower end of the adaptive confidence interval.
+#'
+#' @inheritParams tau_calc
+#' @param Yt outcome value for the treated group observations.
+#' @param Yc outcome value for the control group observations.
+#' @param hmat the matrix of modulus values corresponding to
+#' the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.
+#'
+#' @return the value of the lower end of the confidence interval.
+#' @export
+#'
+#' @examples n <- 500
+#' d <- 2
+#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' Xt <- X[tind == 1, ,drop = FALSE]
+#' Xc <- X[tind == 0, ,drop = FALSE]
+#' mon_ind <- c(1, 2)
+#' sigma <- rnorm(n)^2 + 1
+#' sigma_t <- sigma[tind == 1]
+#' sigma_c <- sigma[tind == 0]
+#' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
+#' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
+#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+                    num_sim = 10^4, delta_init = 1.96, hmat_init, hmat){
+
+  J <- length(Cvec)
+  Cbar <- max(Cvec)
+
+  if(missing(hmat_init)){
+
+    hmat_init <- matrix(0, nrow = J, ncol = 2)
+
+    for(j in 1:J){
+
+      Cj <- Cvec[j]
+
+      hres_j <- bw_adpt(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat_init[j, 1] <- hres_j$ht
+      hmat_init[j, 2] <- hres_j$hc
+    }
+  }
+
+  tau_res <- tau_calc(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, num_sim,
+                      delta_init, hmat_init)
+  tau_sol <- tau_res$tau_sol
+  del_sol <- tau_res$del_sol
+
+  resvec <- numeric(J)
+
+  for(j in 1:J){
+
+    Cj <- Cvec[j]
+
+    if(missing(hmat)){
+
+      hres_j <- bw_adpt(del_sol, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      ht_j <- hres_j$ht
+      hc_j <- hres_j$hc
+
+    }else{
+
+      ht_j <- hmat[j, 1]
+      hc_j <- hmat[j, 2]
+
+    }
+
+    resvec[j] <- c_hat_lower_RD(del_sol, Cj, Cbar, Xt, Xc, mon_ind,
+                                sigma_t, sigma_c, Yt, Yc, tau_sol,
+                                ht_j, hc_j)
+  }
+
+  res <- max(resvec)
+  return(res)
+}
