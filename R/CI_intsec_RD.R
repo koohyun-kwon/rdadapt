@@ -164,3 +164,68 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
   res <- stats::quantile(rn_max, 1 - alpha)
   return(res)
 }
+
+#' Coverage Probability Calculation for Intersection CI
+#'
+#' Calculates the coverage probability of individual confidence intervals
+#' to ensure the proper coverage of the intersection confidence interval.
+#'
+#' @inheritParams cov_mat_calc
+#' @inheritParams max_Q
+#' @param delta_init the value of \eqn{\delta} to be used in simulating the quantile;
+#' theoretically, its value does not matter asymptotically.
+#'
+#' @return a list of two values, \code{del_sol}, the proper value of \eqn{\delta} to be used
+#' for individual CIs, and \code{tau_sol}, the non-coverage probability associated with the
+#' value of \eqn{\delta}.
+#' @export
+#'
+#' @examples n <- 500
+#' d <- 2
+#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' Xt <- X[tind == 1, ,drop = FALSE]
+#' Xc <- X[tind == 0, ,drop = FALSE]
+#' mon_ind <- c(1, 2)
+#' sigma <- rnorm(n)^2 + 1
+#' sigma_t <- sigma[tind == 1]
+#' sigma_c <- sigma[tind == 0]
+#' tau_sol((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+tau_sol <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
+                    num_sim = 10^4, delta_init = 1.96){
+
+  J <- length(Cvec)
+  Cbar <- max(Cvec)
+
+  hmat_init <- matrix(0, nrow = J, ncol = 2)
+
+  for(j in 1:J){
+
+    Cj <- Cvec[j]
+
+    hres_j <- bw_adpt(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hmat_init[j, 1] <- hres_j$ht
+    hmat_init[j, 2] <- hres_j$hc
+  }
+
+  covmat <- cov_mat_calc(delta_init, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
+  del_sol <- max_Q(covmat, alpha, num_sim)
+  tau_sol <- stats::pnorm(del_sol)
+
+  res <- list(del_sol = del_sol, tau_sol = tau_sol)
+  return(res)
+}
+
+# CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+#                     hmat_init, num_sim = 10^4, delta_init = 1.96){
+#
+#
+#
+#   resvec <- numeric(J)
+#   for(j in 1:J){
+#
+#     Cj <- Cvec[j]
+#     resvec[j] <- c_hat_lower_RD(del_sol, Cj, Cbar, Xt, Xc, mon_ind,
+#                                 sigma_t, sigma_c, Yt, Yc, tau_sol)
+#   }
+# }
