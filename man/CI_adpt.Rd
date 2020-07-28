@@ -54,7 +54,10 @@ and \code{Cvec}; it can be left unspecified.}
 the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.}
 }
 \value{
-the value of the lower end of the confidence interval.
+a list components \code{CI} which gives the value of
+the lower end of the confidence interval, \code{CI_vec} which gives the values of
+all CIs used to compute the adaptive CI, and \code{tau_sol} which gives the value of
+non-coverage probability used to compute individual CIs.
 }
 \description{
 Calculates the value of the lower end of the adaptive confidence interval.

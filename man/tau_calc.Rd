@@ -49,8 +49,8 @@ for individual CIs, and \code{tau_sol}, the non-coverage probability associated 
 value of \eqn{\delta}.
 }
 \description{
-Calculates the coverage probability of individual confidence intervals
-to ensure the proper coverage of the intersection confidence interval.
+Calculates the (non-)coverage probabilities of individual confidence intervals
+that ensure the proper coverage of the intersection confidence interval.
 }
 \examples{
 n <- 500

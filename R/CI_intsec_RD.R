@@ -167,8 +167,8 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
 
 #' Coverage Probability Calculation for Intersection CI
 #'
-#' Calculates the coverage probability of individual confidence intervals
-#' to ensure the proper coverage of the intersection confidence interval.
+#' Calculates the (non-)coverage probabilities of individual confidence intervals
+#' that ensure the proper coverage of the intersection confidence interval.
 #'
 #' @inheritParams cov_mat_calc
 #' @inheritParams max_Q
@@ -215,7 +215,7 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
   covmat <- cov_mat_calc(delta_init, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
   del_sol <- max_Q(covmat, alpha, num_sim)
-  tau_sol <- stats::pnorm(del_sol)
+  tau_sol <- 1 - stats::pnorm(del_sol)
 
   res <- list(del_sol = del_sol, tau_sol = tau_sol)
   return(res)
@@ -231,7 +231,10 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' @param hmat the matrix of modulus values corresponding to
 #' the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.
 #'
-#' @return the value of the lower end of the confidence interval.
+#' @return a list components \code{CI} which gives the value of
+#' the lower end of the confidence interval, \code{CI_vec} which gives the values of
+#' all CIs used to compute the adaptive CI, and \code{tau_sol} which gives the value of
+#' non-coverage probability used to compute individual CIs.
 #' @export
 #'
 #' @examples n <- 500
@@ -296,6 +299,6 @@ CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
                                 ht_j, hc_j)
   }
 
-  res <- max(resvec)
-  return(res)
+  res_list <- list(CI = max(resvec), CI_vec = resvec, tau_sol = tau_sol)
+  return(res_list)
 }
