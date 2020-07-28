@@ -161,7 +161,7 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
   rn <- MASS::mvrnorm(n = num_sim, mu = rep(0, J), Sigma = covmat)
   rn_max <- apply(rn, 1, max)
 
-  res <- stats::quantile(rn_max, 1 - alpha)
+  res <- as.numeric(stats::quantile(rn_max, 1 - alpha))
   return(res)
 }
 
@@ -249,8 +249,8 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
-CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+#' CI_adpt_L((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
                     num_sim = 10^4, delta_init = 1.96, hmat_init, hmat){
 
   J <- length(Cvec)
@@ -301,4 +301,61 @@ CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
 
   res_list <- list(CI = max(resvec), CI_vec = resvec, tau_sol = tau_sol)
   return(res_list)
+}
+
+
+#' Title
+#'
+#' @inheritParams CI_adpt_L
+#' @param lower calculate a lower one-sided confidence interval if \code{TRUE};
+#' calculate a two-sided CI otherwise.
+#' @param hmat_init_L the matrix of modulus values corresponding to \code{delta_init}
+#' and \code{Cvec}; it can be left unspecified.
+#' @param hmat_L the matrix of modulus values corresponding to
+#' the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.
+#'
+#' @return confidence interval endpoints.
+#' @export
+#'
+#' @examples n <- 500
+#' d <- 2
+#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' Xt <- X[tind == 1, ,drop = FALSE]
+#' Xc <- X[tind == 0, ,drop = FALSE]
+#' mon_ind <- c(1, 2)
+#' sigma <- rnorm(n)^2 + 1
+#' sigma_t <- sigma[tind == 1]
+#' sigma_c <- sigma[tind == 0]
+#' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
+#' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
+#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = FALSE)
+#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
+CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower = FALSE,
+                    num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L){
+
+  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+    stop("Xt and Xc should be matrices")
+  }
+
+  if(lower == T){
+
+    res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+                     num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L)
+    res <- c(res_L$CI, Inf)
+  }else{
+
+    Cbar <- max(Cvec)
+
+    res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2,
+                       num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L)
+    CI_L <- res_L$CI
+
+    CI_U <- -c_hat_lower_RD(stats::qnorm(1 - alpha/2), Cbar, Cbar, Xc, Xt, mon_ind,
+                            sigma_c, sigma_t, Yc, Yt, alpha/2)
+
+    res <- c(CI_L, CI_U)
+  }
+
+  return(res)
 }
