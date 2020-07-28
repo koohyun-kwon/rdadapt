@@ -12,3 +12,5 @@ LazyData: true
 RoxygenNote: 7.1.1.9000
 Imports:
     MASS
+Suggests:
+    rdrobust
