@@ -7,8 +7,8 @@
 gen_obs(
   n,
   d,
-  C_pair,
-  spec = c("Const", "Lin"),
+  C,
+  spec = c("Lin"),
   sd_spec = c("hom", "het"),
   X_dist = c("equi"),
   true_val = 1
@@ -19,7 +19,7 @@ gen_obs(
 
 \item{d}{number of running variables.}
 
-\item{C_pair}{a pair of smoothness parameters; \code{C_pair[1] <= C_pair[2]} should hold.}
+\item{C}{a smoothness parameter.}
 
 \item{spec}{specifications to use.}
 
@@ -38,5 +38,5 @@ and \code{sigma_c}.
 Sample Generation for Simulations
 }
 \examples{
-gen_obs(100, 1, c(1/2, 1), "Const", "het", "equi")
+gen_obs(100, 1, 1/2, "Lin", "het", "equi")
 }
