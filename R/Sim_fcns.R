@@ -117,3 +117,38 @@ res_gen <- function(obs_data, method_sym, C_len, mon_ind, alpha,
   return(res)
 
 }
+
+
+#' Dataframe Generation After Simulations
+#'
+#' @param res_all data matrix generated from simulations.
+#' @param trueC a vector of true smoothness parameters used.
+#' @param method_name a vector of names of CI construction methods used.
+#'
+#' @return a list containing coverage and length results stored as \code{data.frame}.
+#' @export
+#'
+#' @examples trueC <- c(0.1, 0.2)
+#' method_name <- c("a", "b")
+#' m_len <- length(method_name)
+#' trueC_len <- length(trueC)
+#' nIters <- 50
+#' rowlen <- m_len * trueC_len * 2
+#' res_all <- matrix(stats::rnorm(rowlen * nIters), nrow = rowlen, ncol = nIters)
+#' res_form(res_all, trueC, method_name)
+res_form <- function(res_all, trueC, method_name){
+
+  m_len <- length(method_name)
+  trueC_len <- length(trueC)
+
+  resMean <- rowMeans(res_all)
+  col_C <- rep(trueC, each = m_len)
+  col_met <- rep(method_name, trueC_len)
+  col_cov <- resMean[c(TRUE, FALSE)]
+  col_len <- resMean[c(FALSE, TRUE)]
+
+  cov_data <- data.frame(C = col_C, cov_prob = col_cov, method = col_met)
+  len_data <- data.frame(C = col_C, cov_prob = col_len, method = col_met)
+
+  res <- list(cov_data = cov_data, len_data = len_data)
+}
