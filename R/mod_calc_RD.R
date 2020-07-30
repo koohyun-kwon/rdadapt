@@ -6,7 +6,7 @@
 #'
 #' @param b point where the inverse modulus is evaluated at.
 #' @param C_pair a pair of smoothness parameters \eqn{(C, C')}.
-#' @param X n by k design matrix.
+#' @param X n by d design matrix.
 #' @param mon_ind index of the monotone variables.
 #' @param sigma standard deviation of the error term (either length 1 or n).
 #' @param swap indicator for whether we take (C', C) instead of (C, C').
@@ -66,8 +66,8 @@ minb_fun <- function(C_pair, X, mon_ind, swap = FALSE){
 #'
 #' @param b point where the inverse modulus is evaluated at.
 #' @param C_pair a pair of smoothness parameters \eqn{(C, C')}.
-#' @param Xt \eqn{n_t} by \eqn{k} design matrix for the treated units.
-#' @param Xc \eqn{n_c} by \eqn{k} design matrix for the control units.
+#' @param Xt \eqn{n_t} by \eqn{d} design matrix for the treated units.
+#' @param Xc \eqn{n_c} by \eqn{d} design matrix for the control units.
 #' @param mon_ind index number for monotone variables.
 #' @param sigma_t standard deviation of the error term for the treated units
 #' (either length 1 or \eqn{n_t}).

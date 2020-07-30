@@ -11,7 +11,7 @@ invmod(b, C_pair, X, mon_ind, sigma, swap = FALSE)
 
 \item{C_pair}{a pair of smoothness parameters \eqn{(C, C')}.}
 
-\item{X}{n by k design matrix.}
+\item{X}{n by d design matrix.}
 
 \item{mon_ind}{index of the monotone variables.}
 
