@@ -11,9 +11,9 @@ CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 
 \item{C}{a scalar smoothness parameter.}
 
-\item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
+\item{Xt}{\eqn{n_t} by \eqn{d} design matrix for the treated units.}
 
-\item{Xc}{\eqn{n_c} by \eqn{k} design matrix for the control units.}
+\item{Xc}{\eqn{n_c} by \eqn{d} design matrix for the control units.}
 
 \item{mon_ind}{index number for monotone variables.}
 
