@@ -19,7 +19,7 @@ gen_obs(
 
 \item{d}{number of running variables.}
 
-\item{C}{a smoothness parameter.}
+\item{C}{a scalar or a vector of true smoothness parameters.}
 
 \item{spec}{specifications to use.}
 
@@ -39,4 +39,5 @@ Sample Generation for Simulations
 }
 \examples{
 gen_obs(100, 1, 1/2, "Lin", "het", "equi")
+gen_obs(100, 1, c(1/2, 1), "Lin", "hom", "equi")
 }
