@@ -4,7 +4,7 @@
 \alias{res_gen}
 \title{CI Result Generation}
 \usage{
-res_gen(n, spec_list, method_sym, C_len, true_val = 1)
+res_gen(n, spec_list, method_sym, C_len, Csvtv_const, true_val = 1)
 }
 \arguments{
 \item{n}{sample size.}
@@ -14,7 +14,10 @@ res_gen(n, spec_list, method_sym, C_len, true_val = 1)
 \item{method_sym}{a vector CI construction methods to be used; currently supports
 \code{c("Ex", "rdr")}.}
 
-\item{C_len}{the number of parameters to adapt to.}
+\item{C_len}{the number of smoothness parameters to adapt to.}
+
+\item{Csvtv_const}{the constant which governs the degree of conservativeness of the
+adaptive and minimax procedures.}
 
 \item{true_val}{the true parameter value; default is 1.}
 }
@@ -29,5 +32,5 @@ CI Result Generation
 n <- 100
 spec_list <- rdadapt::spec_set(1, 2)
 method_sym <- c("Ex", "rdr")
-res_gen(n, spec_list, method_sym, 5)
+res_gen(n, spec_list, method_sym, 5, 2)
 }

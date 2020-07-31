@@ -16,6 +16,7 @@ CI_gen_met(
   alpha,
   trueC = NULL,
   C_len = NULL,
+  Csvtv_const = NULL,
   rdr_swap = TRUE,
   rdr_met = 3
 )
@@ -45,6 +46,9 @@ among \code{c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr")} so far.}
 \item{trueC}{a vector of true smoothness parameters used in simulations.}
 
 \item{C_len}{the number of smoothness parameters to adapt to.}
+
+\item{Csvtv_const}{the constant which governs the degree of conservativeness of the
+adaptive and minimax procedures.}
 
 \item{rdr_swap}{\code{TRUE} if swapped value of \code{rdrobust} result will be used;
 set \code{TRUE} if \code{x < 0} is treated.}
