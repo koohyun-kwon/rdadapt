@@ -62,7 +62,7 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 
   }else if(sd_spec == "het"){
 
-    sig <- stats::rnorm(n, 0, 1/sqrt(2))^2 + 1/2
+    sig = rep(1, n) #to be revised
   }
 
   if(d == 1){
@@ -97,7 +97,8 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 
 #' CI Generation Corresponding to the Specified Method
 #'
-#' @param met CI generation method to use, among \code{c("Ex", "Csvtv", "rdr")} so far.
+#' @param met CI generation method to use,
+#' among \code{c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr")} so far.
 #' @inheritParams c_hat_lower_RD
 #' @param alpha a desired level of non-coverage.
 #' @param rdr_swap \code{TRUE} if swapped value of \code{rdrobust} result will be used;
@@ -120,7 +121,8 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 #' C_len <- 5
 #' CI_gen_met("Ex", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
 #' CI_gen_met("rdr", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05)
-CI_gen_met<- function(met = c("Ex", "Csvtv", "rdr"), Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
+                      Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
                       trueC = NULL, C_len = NULL, rdr_swap = TRUE, rdr_met = 3){
 
   met = match.arg(met)
@@ -140,6 +142,18 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "rdr"), Xt, Xc, mon_ind, sigma_t, s
     Cvec <- seq(from = C_min, to = C_max, length.out = C_len)
 
     CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha)
+
+  }else if(met == "Ex_mm"){
+
+    C_max <- max(trueC)
+
+    CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
+
+  }else if(met == "Csvtv_mm"){
+
+    C_max <- 2 * max(trueC)
+
+    CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
 
   }else if(met == "rdr"){
 
