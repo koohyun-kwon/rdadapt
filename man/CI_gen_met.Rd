@@ -5,7 +5,7 @@
 \title{CI Generation Corresponding to the Specified Method}
 \usage{
 CI_gen_met(
-  met = c("Ex", "Csvtv", "rdr"),
+  met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
   Xt,
   Xc,
   mon_ind,
@@ -21,7 +21,8 @@ CI_gen_met(
 )
 }
 \arguments{
-\item{met}{CI generation method to use, among \code{c("Ex", "Csvtv", "rdr")} so far.}
+\item{met}{CI generation method to use,
+among \code{c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr")} so far.}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 

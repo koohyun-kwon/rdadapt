@@ -1,4 +1,21 @@
-#' Minimax CI length for regression function at a point
+#' \eqn{cv_\alpha(t)} Function
+#'
+#' @param t the non-centrality parameter.
+#' @param alpha probability
+#'
+#' @return the quantile value
+#' @export
+#'
+#' @examples cv_a(1, 0.05)
+cv_a <- function(t, alpha){
+
+  q_sq <- stats::qchisq(1 - alpha, 1, ncp = t^2)
+  res <- sqrt(q_sq)
+
+  return(res)
+}
+
+#' Minimum CI Half-length
 #'
 #' @inheritParams invmod_RD
 #' @param C a scalar smoothness parameter.
@@ -27,24 +44,32 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
   bt <- om_inv$bt
   om_inv_t <- om_inv$delta_t
   om_inv_c <- om_inv$delta_c
-  om_inv <- sqrt(om_inv_t^2 + om_inv_c^2)
+  # om_inv <- sqrt(om_inv_t^2 + om_inv_c^2)
+  delta <- sqrt(om_inv_t^2 + om_inv_c^2)
 
-  if (om_inv == 0) return(Inf)
+  if ((om_inv_t + om_inv_c) == 0) return(Inf)
 
-  Kt <- K_fun(bt, rep(C, 2), Xt, mon_ind)
-  gf_ip_iota_t <- sum(bt * Kt / sigma_t^2)
+  sup_bias <- sup_bias_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
+  sup_bias <- sup_bias - a_fun(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
+  sd <- sd_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
 
-  Kc <- K_fun(bc, rep(C, 2), Xc, mon_ind)
-  gf_ip_iota_c <- sum(bc * Kc / sigma_c^2)
+  t <- sup_bias / sd
+  res <- cv_a(t, alpha) * sd
 
-  sd <- sqrt((om_inv_t/gf_ip_iota_t)^2 + (om_inv_c/gf_ip_iota_c)^2)
+  # Kt <- K_fun(bt, rep(C, 2), Xt, mon_ind)
+  # gf_ip_iota_t <- sum(bt * Kt / sigma_t^2)
+  #
+  # Kc <- K_fun(bc, rep(C, 2), Xc, mon_ind)
+  # gf_ip_iota_c <- sum(bc * Kc / sigma_c^2)
+  #
+  # sd <- sqrt((om_inv_t/gf_ip_iota_t)^2 + (om_inv_c/gf_ip_iota_c)^2)
+  #
+  # bias <- .5 * (b - (om_inv^2 /  (gf_ip_iota_t + gf_ip_iota_c)))
+  # cva <- ifelse(abs(bias / sd) > 3,
+  #               abs(bias / sd) + stats::qnorm(1 - alpha),
+  #               sqrt(stats::qchisq(1 - alpha, df = 1, ncp = (bias / sd)^2)))
 
-  bias <- .5 * (b - (om_inv^2 /  (gf_ip_iota_t + gf_ip_iota_c)))
-  cva <- ifelse(abs(bias / sd) > 3,
-                abs(bias / sd) + stats::qnorm(1 - alpha),
-                sqrt(stats::qchisq(1 - alpha, df = 1, ncp = (bias / sd)^2)))
-
-  return(2 * cva * sd)
+  return(res)
 }
 
 #' Minimax Confidence Interval
@@ -101,7 +126,7 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c,
                                      C = C_max, Xt = Xt, Xc = Xc, mon_ind = mon_ind,
                                      sigma_t = sigma_t, sigma_c = sigma_c, alpha = alpha)
 
-    min_half_length <- CI_length_sol$objective / 2
+    min_half_length <- CI_length_sol$objective
     opt_b <- CI_length_sol$minimum
 
     if(Prov.Plot == TRUE){
@@ -124,10 +149,13 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c,
   invmod_opt <- invmod_RD(opt_b, rep(C_max, 2), Xt, Xc, mon_ind, sigma_t, sigma_c)
   ht <- invmod_opt$bt
   hc <- invmod_opt$bc
+  del_t <- invmod_opt$delta_t
+  del_c <- invmod_opt$delta_c
+  delta <- sqrt(del_t^2 + del_c^2)
 
-  opt_Lhat <- Lhat_fun_RD(0, C_max, C_max, Xt, Xc, mon_ind,
-                          sigma_t, sigma_c, Yt, Yc, ht, hc) +
-              a_fun(0, C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc)
+  opt_Lhat <- Lhat_fun_RD(delta, C_max, C_max, Xt, Xc, mon_ind,
+                          sigma_t, sigma_c, Yt, Yc, ht, hc) -
+              a_fun(delta, C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc)
 
   res <- c(opt_Lhat - min_half_length, opt_Lhat + min_half_length)
 

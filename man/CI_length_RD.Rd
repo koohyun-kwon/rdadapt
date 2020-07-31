@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_mm.R
 \name{CI_length_RD}
 \alias{CI_length_RD}
-\title{Minimax CI length for regression function at a point}
+\title{Minimum CI Half-length}
 \usage{
 CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 }
@@ -29,7 +29,7 @@ CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 the length of CI corresponding to the modulus value \code{b}
 }
 \description{
-Minimax CI length for regression function at a point
+Minimum CI Half-length
 }
 \examples{
 n <- 500
