@@ -4,7 +4,15 @@
 \alias{res_gen}
 \title{CI Result Generation}
 \usage{
-res_gen(n, spec_list, method_sym, C_len, Csvtv_const, true_val = 1)
+res_gen(
+  n,
+  spec_list,
+  method_sym,
+  C_len,
+  Csvtv_const,
+  lower = FALSE,
+  true_val = 1
+)
 }
 \arguments{
 \item{n}{sample size.}
@@ -18,6 +26,8 @@ res_gen(n, spec_list, method_sym, C_len, Csvtv_const, true_val = 1)
 
 \item{Csvtv_const}{the constant which governs the degree of conservativeness of the
 adaptive and minimax procedures.}
+
+\item{lower}{\code{TRUE} in order to generate a lower one-sided confidence interval}
 
 \item{true_val}{the true parameter value; default is 1.}
 }

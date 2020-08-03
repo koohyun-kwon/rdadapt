@@ -2,24 +2,46 @@
 #'
 #' @param spec_num a number symbolizing the specification to be used.
 #' @param trueC_len the number of true smoothness spaces.
+#' @param trueC the scalar value of the smoothness parameter, used when
+#' \code{trueC_len = 1}.
 #'
 #' @return a list of elements.
 #' @export
 #'
 #' @examples spec_set(1, 5)
-spec_set <- function(spec_num, trueC_len){
+#' spec_set(2, 5)
+#' spec_set(1, 1, 0.5)
+spec_set <- function(spec_num, trueC_len, trueC = NULL){
+
+  trueC_min <- 1/5
+  trueC_max <- 1
+  if(trueC_len > 1){
+
+    trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
+
+  }else if(trueC_len == 1 & is.null(trueC)){
+
+    stop("Error: provide the value of trueC when trueC_len = 1.")
+  }
 
   if(spec_num == 1){
 
     d <- 1
     mon_ind <- c(1)
 
-    trueC_min <- 1/5
-    trueC_max <- 1
-    trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
     spec <- "Lin"
     sd_spec <- "hom"
+    X_dist = "equi"
 
+    alpha <- 0.05
+
+  }else if(spec_num == 2){
+
+    d <- 2
+    mon_ind <- c(1, 2)
+
+    spec <- "Lin"
+    sd_spec <- "hom"
     X_dist = "equi"
 
     alpha <- 0.05
@@ -48,6 +70,7 @@ spec_set <- function(spec_num, trueC_len){
 #'
 #' @examples gen_obs(100, 1, 1/2, "Lin", "het", "equi")
 #' gen_obs(100, 1, c(1/2, 1), "Lin", "hom", "equi")
+#' gen_obs(200, 2, c(1/2, 1), "Lin", "hom", "equi")
 gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
                     X_dist = c("equi"), true_val = 1){
 
@@ -89,6 +112,36 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
       Yc = Xc %*% C + uc
 
     }
+  }else if(d == 2){
+
+    if(X_dist == "equi"){
+
+      n2 <- as.integer(sqrt(n))^2  # sqrt(n) is not an integer
+      n3 <- n - n2 # to make the sample size back to n
+
+      grid_pt <- seq(from = -1, to = 1, length.out = sqrt(n2))
+      X_2 <- data.matrix(expand.grid(grid_pt, grid_pt))
+      X <- rbind(X_2, matrix(0, nrow = n3, ncol = 2))
+
+      tind <- X[,1] < 0 & X[,2] < 0
+    }
+
+    Xt <- X[tind == 1, ,drop = F]
+    Xc <- X[tind == 0, ,drop = F]
+    sigma_t <- sig[tind == 1]
+    sigma_c <- sig[tind == 0]
+
+    if(spec == "Lin"){
+
+      ut <- rep(stats::rnorm(length(sigma_t), mean = 0, sd = sigma_t), trueC_len)
+      ut <- matrix(ut, nrow = length(sigma_t), ncol = trueC_len)
+      uc <- rep(stats::rnorm(length(sigma_c), mean = 0, sd = sigma_c), trueC_len)
+      uc <- matrix(uc, nrow = length(sigma_c), ncol = trueC_len)
+
+      Yt = true_val + Xt[, 1, drop = F] %*% C + Xt[, 2, drop = F] %*% C + ut
+      Yc = Xc[, 1, drop = F] %*% C + Xc[, 2, drop = F] %*% C + uc
+
+    }
   }
 
   res <- list(Yt = Yt, Yc = Yc, Xt = Xt, Xc = Xc, sigma_t = sigma_t, sigma_c = sigma_c)
@@ -107,6 +160,7 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 #' @param C_len the number of smoothness parameters to adapt to.
 #' @param Csvtv_const the constant which governs the degree of conservativeness of the
 #' adaptive and minimax procedures.
+#' @param lower \code{TRUE} in order to generate a lower one-sided confidence interval
 #' @param rdr_met which row of the \code{rdrobust} result matrix will be used; the default is 3.
 #'
 #' @return a vector of lower and upper ends of the CI.
@@ -123,9 +177,11 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 #' C_len <- 5
 #' CI_gen_met("Ex", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
 #' CI_gen_met("rdr", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05)
+#' CI_gen_met("Ex_mm", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
+#' Csvtv_const = 1, lower = TRUE)
 CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
                       Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-                      trueC = NULL, C_len = NULL, Csvtv_const = NULL,
+                      trueC = NULL, C_len = NULL, Csvtv_const = NULL, lower = FALSE,
                       rdr_swap = TRUE, rdr_met = 3){
 
   met = match.arg(met)
@@ -136,7 +192,7 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
     C_max <- max(trueC)
     Cvec <- seq(from = C_min, to = C_max, length.out = C_len)
 
-    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha)
+    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower)
 
   }else if(met == "Csvtv"){
 
@@ -144,31 +200,67 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
     C_max <- Csvtv_const * max(trueC)
     Cvec <- seq(from = C_min, to = C_max, length.out = C_len)
 
-    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha)
+    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower)
 
   }else if(met == "Ex_mm"){
 
     C_max <- max(trueC)
 
-    CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
+    if(lower == FALSE){
+
+      CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
+
+    }else{
+
+      CI_l <- c_hat_lower_RD(stats::qnorm(1 - alpha), C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c,
+                         Yt, Yc, alpha)
+      CI <- c(CI_l, Inf)
+    }
+
 
   }else if(met == "Csvtv_mm"){
 
     C_max <- Csvtv_const * max(trueC)
 
-    CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
+    if(lower == FALSE){
+
+      CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha)
+
+    }else{
+
+      CI_l <- c_hat_lower_RD(stats::qnorm(1 - alpha), C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c,
+                             Yt, Yc, alpha)
+      CI <- c(CI_l, Inf)
+    }
 
   }else if(met == "rdr"){
 
     X <- as.numeric(rbind(Xt, Xc))
     Y <- c(Yt, Yc)
 
-    rdr_res <- rdrobust::rdrobust(Y, X)$ci
-    CI <- c(rdr_res[3, 1], rdr_res[3, 2])
-    if(rdr_swap) CI <- -CI[c(2:1)]
 
+    if(lower == FALSE){
+
+      rdr_res_all <- rdrobust::rdrobust(y = Y, x = X, level = (1 - alpha) * 100)
+
+      rdr_res <- rdr_res_all$ci
+      CI <- c(rdr_res[3, 1], rdr_res[3, 2])
+      if(rdr_swap) CI <- -CI[c(2:1)]
+
+    }else{
+
+      rdr_res_all <- rdrobust::rdrobust(y = Y, x = X, level = (1 - 2 * alpha) * 100)
+
+      rdr_res <- rdr_res_all$ci
+      CI_all <- c(rdr_res[3, 1], rdr_res[3, 2])
+      CI <- c(-Inf, CI_all[2])
+      if(rdr_swap){
+
+        CI_all <- -CI_all[c(2:1)]
+        CI <- c(CI_all[1], Inf)
+      }
+    }
   }
-
   return(CI)
 }
 
@@ -189,7 +281,7 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
 #' spec_list <- rdadapt::spec_set(1, 2)
 #' method_sym <- c("Ex", "rdr")
 #' res_gen(n, spec_list, method_sym, 5, 2)
-res_gen <- function(n, spec_list, method_sym, C_len, Csvtv_const, true_val = 1){
+res_gen <- function(n, spec_list, method_sym, C_len, Csvtv_const, lower = FALSE, true_val = 1){
 
   d <- spec_list$d
   mon_ind <- spec_list$mon_ind
@@ -228,10 +320,16 @@ res_gen <- function(n, spec_list, method_sym, C_len, Csvtv_const, true_val = 1){
       ind <- 2 * (i - 1) + 1
 
       CI <- CI_gen_met(met, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt_j, Yc_j, alpha,
-                       trueC, C_len, Csvtv_const)
+                       trueC, C_len, Csvtv_const, lower)
 
       res_j[ind] <- as.numeric(CI[1] < true_val & CI[2] > true_val)
-      res_j[ind + 1] <- CI[2] - CI[1]
+
+      if(lower == FALSE){
+        res_j[ind + 1] <- CI[2] - CI[1]
+      }else{
+        res_j[ind + 1] <- true_val - CI[1]
+      }
+
     }
 
     ind_1 <- 2 * m_len * (j - 1) + 1

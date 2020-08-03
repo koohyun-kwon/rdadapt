@@ -40,4 +40,5 @@ Sample Generation for Simulations
 \examples{
 gen_obs(100, 1, 1/2, "Lin", "het", "equi")
 gen_obs(100, 1, c(1/2, 1), "Lin", "hom", "equi")
+gen_obs(200, 2, c(1/2, 1), "Lin", "hom", "equi")
 }

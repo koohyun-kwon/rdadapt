@@ -17,6 +17,7 @@ CI_gen_met(
   trueC = NULL,
   C_len = NULL,
   Csvtv_const = NULL,
+  lower = FALSE,
   rdr_swap = TRUE,
   rdr_met = 3
 )
@@ -50,6 +51,8 @@ among \code{c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr")} so far.}
 \item{Csvtv_const}{the constant which governs the degree of conservativeness of the
 adaptive and minimax procedures.}
 
+\item{lower}{\code{TRUE} in order to generate a lower one-sided confidence interval}
+
 \item{rdr_swap}{\code{TRUE} if swapped value of \code{rdrobust} result will be used;
 set \code{TRUE} if \code{x < 0} is treated.}
 
@@ -73,4 +76,6 @@ trueC <- (1:5)/5
 C_len <- 5
 CI_gen_met("Ex", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
 CI_gen_met("rdr", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_gen_met("Ex_mm", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
+Csvtv_const = 1, lower = TRUE)
 }
