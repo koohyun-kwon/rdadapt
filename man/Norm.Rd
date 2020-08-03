@@ -4,7 +4,7 @@
 \alias{Norm}
 \title{(Weighted) \eqn{L_p} Norm}
 \usage{
-Norm(X, p = 2, invw = 1)
+Norm(X, p = 1, invw = 1)
 }
 \arguments{
 \item{X}{A numeric matrix.}

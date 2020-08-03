@@ -77,7 +77,7 @@ Vminus <- function(X, mon_ind) {
 #' Norm(X)
 #' weights <- c(1, 2)
 #' Norm(X = X, invw = weights)
-Norm <- function(X, p = 2, invw = 1) {
+Norm <- function(X, p = 1, invw = 1) {
 
   n <- nrow(X)
   d <- ncol(X)
