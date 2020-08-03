@@ -11,7 +11,8 @@ res_gen(
   C_len,
   Csvtv_const,
   lower = FALSE,
-  true_val = 1
+  true_val = 1,
+  power = FALSE
 )
 }
 \arguments{
@@ -29,7 +30,10 @@ adaptive and minimax procedures.}
 
 \item{lower}{\code{TRUE} in order to generate a lower one-sided confidence interval}
 
-\item{true_val}{the true parameter value; default is 1.}
+\item{true_val}{the true parameter value; default is 1. It can be a vector for
+power function calculations.}
+
+\item{power}{generates power function result if \code{TRUE}.}
 }
 \value{
 a vector of (coverage, CI_length) for each method - a vector of
@@ -40,7 +44,8 @@ CI Result Generation
 }
 \examples{
 n <- 100
-spec_list <- rdadapt::spec_set(1, 2)
+spec_list <- rdadapt::spec_set(1, 2, 0.5)
 method_sym <- c("Ex", "rdr")
 res_gen(n, spec_list, method_sym, 5, 2)
+res_gen(n, spec_list, method_sym, 5, 2, FALSE, c(0, 1), TRUE)
 }

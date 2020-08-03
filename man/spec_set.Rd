@@ -4,15 +4,15 @@
 \alias{spec_set}
 \title{Specification Setting for Simulation}
 \usage{
-spec_set(spec_num, trueC_len, trueC = NULL)
+spec_set(spec_num, trueC_len, trueC_sc = NULL)
 }
 \arguments{
 \item{spec_num}{a number symbolizing the specification to be used.}
 
 \item{trueC_len}{the number of true smoothness spaces.}
 
-\item{trueC}{the scalar value of the smoothness parameter, used when
-\code{trueC_len = 1}.}
+\item{trueC_sc}{a scalar value of the smoothness parameter,
+used for power function calculations.}
 }
 \value{
 a list of elements.
