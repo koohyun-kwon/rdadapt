@@ -427,4 +427,37 @@ res_form <- function(res_all, trueC, method_name){
   len_data <- data.frame(C = col_C, avg_len = col_len, method = col_met)
 
   res <- list(cov_data = cov_data, len_data = len_data)
+
+  return(res)
+}
+
+
+#' Dataframe Generation After Simulations (Power Function)
+#'
+#' @param true_val_vec a vector of true values.
+#' @inheritParams res_form
+#'
+#' @return a list containing power results.
+#' @export
+#'
+#' @examples true_val_vec <- c(0.1, 0.2)
+#' method_name <- c("a", "b")
+#' m_len <- length(method_name)
+#' true_val_len <- length(true_val_vec)
+#' nIters <- 50
+#' rowlen <- m_len * true_val_len
+#' res_all <- matrix(stats::rnorm(rowlen * nIters), nrow = rowlen, ncol = nIters)
+#' res_form(res_all, true_val_vec, method_name)
+res_form_pow <- function(res_all, true_val_vec, method_name){
+
+  m_len <- length(method_name)
+  true_val_len <- length(true_val_vec)
+
+  resMean <- rowMeans(res_all)
+  col_tv <- rep(true_val_vec, each = m_len)
+  col_met <- rep(method_name, true_val_len)
+
+  pow_data <- data.frame(true_val = col_tv, cov_prob = resMean, method = col_met)
+
+  return(pow_data)
 }
