@@ -457,7 +457,7 @@ res_form_pow <- function(res_all, true_val_vec, method_name){
   col_tv <- rep(true_val_vec, each = m_len)
   col_met <- rep(method_name, true_val_len)
 
-  pow_data <- data.frame(true_val = col_tv, cov_prob = resMean, method = col_met)
+  pow_data <- data.frame(true_val = col_tv, rej_prob = resMean, method = col_met)
 
   return(pow_data)
 }
