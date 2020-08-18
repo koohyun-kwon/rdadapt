@@ -72,4 +72,5 @@ Yt <- 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 Yc <- rnorm(length(sigma_c), mean = 0, sd = sigma_c)
 C_max <- 1
 CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, 0.05)
+CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, NULL, sigma_t, sigma_c, 0.05)
 }

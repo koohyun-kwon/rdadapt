@@ -101,6 +101,7 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 #' Yc <- rnorm(length(sigma_c), mean = 0, sd = sigma_c)
 #' C_max <- 1
 #' CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, 0.05)
+#' CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, NULL, sigma_t, sigma_c, 0.05)
 CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c,
                           alpha, opt_b = NULL, min_half_length = NULL,
                           maxb.const = 10, Prov.Plot = FALSE) {
