@@ -5,7 +5,8 @@
 \title{CI Generation Corresponding to the Specified Method}
 \usage{
 CI_gen_met(
-  met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
+  met = c("Ex", "Csvtv", "Ex_2", "Csvtv_2", "Ex_mm", "Csvtv_mm", "Csvtv_hbrd", "Nomon",
+    "rdr"),
   Xt,
   Xc,
   mon_ind,
@@ -75,7 +76,11 @@ Yc <- obs_data$Yc
 trueC <- (1:5)/5
 C_len <- 5
 CI_gen_met("Ex", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
+CI_gen_met("Ex_2", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
 CI_gen_met("rdr", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05)
 CI_gen_met("Ex_mm", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
 Csvtv_const = 1, lower = TRUE)
+CI_gen_met("Nomon", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
+CI_gen_met("Csvtv_hbrd", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
+Csvtv_const = 2, lower = FALSE)
 }

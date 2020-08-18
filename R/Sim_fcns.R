@@ -18,7 +18,7 @@ spec_set <- function(spec_num, trueC_len, trueC_sc = NULL){
   trueC_max <- 1
   trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
 
-  if(spec_num == 1){
+  if(spec_num == 1){  # Linear, 1-dim
 
     d <- 1
     mon_ind <- c(1)
@@ -29,7 +29,7 @@ spec_set <- function(spec_num, trueC_len, trueC_sc = NULL){
 
     alpha <- 0.05
 
-  }else if(spec_num == 2){
+  }else if(spec_num == 2){ # Linear, 2-dim
 
     d <- 2
     mon_ind <- c(1, 2)
@@ -170,10 +170,15 @@ gen_obs <- function(n, d, C, spec = c("Lin"), sd_spec = c("hom", "het"),
 #' trueC <- (1:5)/5
 #' C_len <- 5
 #' CI_gen_met("Ex", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
+#' CI_gen_met("Ex_2", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
 #' CI_gen_met("rdr", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05)
 #' CI_gen_met("Ex_mm", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
 #' Csvtv_const = 1, lower = TRUE)
-CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
+#' CI_gen_met("Nomon", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len)
+#' CI_gen_met("Csvtv_hbrd", Xt, Xc, c(1), sigma_t, sigma_c, Yt, Yc, 0.05, trueC, C_len,
+#' Csvtv_const = 2, lower = FALSE)
+CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_2", "Csvtv_2", "Ex_mm", "Csvtv_mm",
+                              "Csvtv_hbrd", "Nomon", "rdr"),
                       Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
                       trueC = NULL, C_len = NULL, Csvtv_const = NULL, lower = FALSE,
                       rdr_swap = TRUE, rdr_met = 3){
@@ -196,6 +201,22 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
 
     CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower)
 
+  }else if(met == "Ex_2"){
+
+    C_min <- min(trueC)
+    C_max <- max(trueC)
+    Cvec <- seq(from = C_min, to = C_max, length.out = 2)
+
+    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower)
+
+  }else if(met == "Csvtv_2"){
+
+    C_min <- min(trueC)
+    C_max <- Csvtv_const * max(trueC)
+    Cvec <- seq(from = C_min, to = C_max, length.out = 2)
+
+    CI <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower)
+
   }else if(met == "Ex_mm"){
 
     C_max <- max(trueC)
@@ -208,6 +229,22 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
 
       CI_l <- c_hat_lower_RD(stats::qnorm(1 - alpha), C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c,
                          Yt, Yc, alpha)
+      CI <- c(CI_l, Inf)
+    }
+
+
+  }else if(met == "Nomon"){
+
+    C_max <- max(trueC)
+
+    if(lower == FALSE){
+
+      CI <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, NULL, sigma_t, sigma_c, alpha)
+
+    }else{
+
+      CI_l <- c_hat_lower_RD(stats::qnorm(1 - alpha), C_max, C_max, Xt, Xc, NULL, sigma_t, sigma_c,
+                             Yt, Yc, alpha)
       CI <- c(CI_l, Inf)
     }
 
@@ -226,6 +263,27 @@ CI_gen_met<- function(met = c("Ex", "Csvtv", "Ex_mm", "Csvtv_mm", "rdr"),
                              Yt, Yc, alpha)
       CI <- c(CI_l, Inf)
     }
+
+  }else if(met == "Csvtv_hbrd"){
+
+    C_min <- min(trueC)
+    C_max <- Csvtv_const * max(trueC)
+    Cvec <- seq(from = C_min, to = C_max, length.out = C_len)
+
+    CI_1 <- CI_adpt(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2, lower)
+
+    if(lower == FALSE){
+
+      CI_2 <- CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, alpha/2)
+
+    }else{
+
+      CI_l <- c_hat_lower_RD(stats::qnorm(1 - alpha/2), C_max, C_max, Xt, Xc, mon_ind, sigma_t, sigma_c,
+                             Yt, Yc, alpha/2)
+      CI_2 <- c(CI_l, Inf)
+    }
+
+    CI <- c(max(CI_1[1], CI_2[1]), min(CI_1[2], CI_2[2]))
 
   }else if(met == "rdr"){
 
