@@ -162,3 +162,73 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c,
 
   return(res)
 }
+
+
+#' Length of Minimax Confidence Interval
+#'
+#' Same as \code{CI_minimax_RD}, except that this function only returns the minimax length.
+#'
+#' @inheritParams CI_minimax_RD
+#'
+#' @return the minimax CI half-length value.
+#' @export
+#'
+#' @examples n <- 500
+#' d <- 2
+#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' Xt <- X[tind == 1, ,drop = FALSE]
+#' Xc <- X[tind == 0, ,drop = FALSE]
+#' mon_ind <- c(1, 2)
+#' sigma <- rnorm(n)^2 + 1
+#' sigma_t <- sigma[tind == 1]
+#' sigma_c <- sigma[tind == 0]
+#' C_max <- 1
+#' CI_minimax_RD_len(Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, 0.05)
+CI_minimax_RD_len <- function(Xt, Xc, C_max, mon_ind, sigma_t, sigma_c,
+                          alpha, opt_b = NULL, min_half_length = NULL,
+                          maxb.const = 10, Prov.Plot = FALSE) {
+
+  if(is.null(opt_b) | is.null(min_half_length)){
+
+    # modres <- modsol_RD(0,rep(C_max,2), Xt, Xc, mon_ind,
+    #                     sigma_t, sigma_c)
+    # minbt <- modres$bt
+    # minbc <- modres$bc
+    # minb <- minbt + minbc
+
+    minbt <- minb_fun(rep(C_max, 2), Xt, mon_ind)
+    minbc <- minb_fun(rep(C_max, 2), Xc, mon_ind, swap = T)
+    minb <- minbt + minbc
+
+    modres_2 <- modsol_RD(stats::qnorm(1 - alpha/2), rep(C_max,2), Xt, Xc,
+                          mon_ind, sigma_t, sigma_c)
+
+    maxb <- maxb.const * (modres_2$bt + modres_2$bc)
+
+    CI_length_sol <- stats::optimize(CI_length_RD, interval = c(minb, maxb),
+                                     C = C_max, Xt = Xt, Xc = Xc, mon_ind = mon_ind,
+                                     sigma_t = sigma_t, sigma_c = sigma_c, alpha = alpha)
+
+    min_half_length <- CI_length_sol$objective
+    opt_b <- CI_length_sol$minimum
+
+    if(Prov.Plot == TRUE){
+
+      numgrid = 100
+      xintv = seq(from = minb, to = maxb, length.out = numgrid)
+      yvec = numeric(numgrid)
+      for(i in 1:numgrid){
+
+        yvec[i] = CI_length_RD(xintv[i], C = C_max, Xt = Xt, Xc = Xc, mon_ind = mon_ind,
+                               sigma_t = sigma_t, sigma_c = sigma_c, alpha = alpha)
+      }
+
+      graphics::plot(xintv, yvec, type = "l", xlab = "modulus", ylab = "CI_length")
+      graphics::abline(v = opt_b, col = "red", lty = 2)
+    }
+
+  }
+
+  return(min_half_length)
+}
