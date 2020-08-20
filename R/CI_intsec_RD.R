@@ -154,14 +154,37 @@ cov_mat_calc <- function(delta, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat){
 #' @export
 #'
 #' @examples covmat <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
-#' max_Q(covmat, 0.05)
-max_Q <- function(covmat, alpha, num_sim = 10^4){
+#' max_Q2(covmat, 0.05)
+max_Q2 <- function(covmat, alpha, num_sim = 10^4){
 
   J <- nrow(covmat)
   rn <- MASS::mvrnorm(n = num_sim, mu = rep(0, J), Sigma = covmat)
   rn_max <- apply(rn, 1, max)
 
   res <- as.numeric(stats::quantile(rn_max, 1 - alpha))
+  return(res)
+}
+
+
+#' Quantile of Maximum of Multivariate Normal Random Variable 2
+#'
+#' Calculates the quantile of maximum of a multivariate normal random variable,
+#' using multivariate normal distribution function calculation.
+#'
+#' @param covmat covariance matrix of the multivariate normal random variable.
+#' @param alpha desired upper quantile value.
+#'
+#' @return \eqn{(1 - \alpha)}th quantile of maximum of a multivariate normal random variable.
+#' @export
+#'
+#' @examples covmat <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
+#' max_Q(covmat, 0.05)
+max_Q <- function(covmat, alpha){
+
+  qres <- mvtnorm::qmvnorm(p = 1 - alpha, tail = "lower.tail", sigma = covmat,
+                           algorithm = mvtnorm::Miwa())
+
+  res <- qres$quantile
   return(res)
 }
 
@@ -194,7 +217,7 @@ max_Q <- function(covmat, alpha, num_sim = 10^4){
 #' sigma_c <- sigma[tind == 0]
 #' tau_calc((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                    num_sim = 10^4, delta_init = 1.96, hmat_init){
+                    delta_init = 1.96, hmat_init){
 
   J <- length(Cvec)
   Cbar <- max(Cvec)
@@ -214,7 +237,7 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
   }
 
   covmat <- cov_mat_calc(delta_init, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
-  del_sol <- max_Q(covmat, alpha, num_sim)
+  del_sol <- max_Q(covmat, alpha)
   tau_sol <- 1 - stats::pnorm(del_sol)
 
   res <- list(del_sol = del_sol, tau_sol = tau_sol)
@@ -251,7 +274,7 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
 #' CI_adpt_L((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
 CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-                    num_sim = 10^4, delta_init = 1.96, hmat_init, hmat){
+                    delta_init = 1.96, hmat_init, hmat){
 
   J <- length(Cvec)
   Cbar <- max(Cvec)
@@ -270,7 +293,7 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
     }
   }
 
-  tau_res <- tau_calc(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, num_sim,
+  tau_res <- tau_calc(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                       delta_init, hmat_init)
   tau_sol <- tau_res$tau_sol
   del_sol <- tau_res$del_sol
@@ -332,7 +355,7 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
 #' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = FALSE)
 #' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
 CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower = FALSE,
-                    num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L){
+                    delta_init = 1.96, hmat_init_L, hmat_L){
 
   if(class(Xt) != "matrix" | class(Xc) != "matrix"){
     stop("Xt and Xc should be matrices")
@@ -341,14 +364,14 @@ CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lowe
   if(lower == T){
 
     res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-                     num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L)
+                     delta_init = 1.96, hmat_init_L, hmat_L)
     res <- c(res_L$CI, Inf)
   }else{
 
     Cbar <- max(Cvec)
 
     res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2,
-                       num_sim = 10^4, delta_init = 1.96, hmat_init_L, hmat_L)
+                       delta_init = 1.96, hmat_init_L, hmat_L)
     CI_L <- res_L$CI
 
     CI_U <- -c_hat_lower_RD(stats::qnorm(1 - alpha/2), Cbar, Cbar, Xc, Xt, mon_ind,

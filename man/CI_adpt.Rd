@@ -15,7 +15,6 @@ CI_adpt(
   Yc,
   alpha,
   lower = FALSE,
-  num_sim = 10^4,
   delta_init = 1.96,
   hmat_init_L,
   hmat_L
@@ -44,9 +43,6 @@ CI_adpt(
 
 \item{lower}{calculate a lower one-sided confidence interval if \code{TRUE};
 calculate a two-sided CI otherwise.}
-
-\item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
 
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
