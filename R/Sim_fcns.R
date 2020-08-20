@@ -14,11 +14,11 @@
 #' spec_set(1, 1, 0.5)
 spec_set <- function(spec_num, trueC_len, trueC_sc = NULL){
 
-  trueC_min <- 1/5
-  trueC_max <- 1
-  trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
-
   if(spec_num == 1){  # Linear, 1-dim
+
+    trueC_min <- 1/5
+    trueC_max <- 1
+    trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
 
     d <- 1
     mon_ind <- c(1)
@@ -31,6 +31,10 @@ spec_set <- function(spec_num, trueC_len, trueC_sc = NULL){
 
   }else if(spec_num == 2){ # Linear, 2-dim
 
+    trueC_min <- 1/5
+    trueC_max <- 1
+    trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
+
     d <- 2
     mon_ind <- c(1, 2)
 
@@ -40,6 +44,20 @@ spec_set <- function(spec_num, trueC_len, trueC_sc = NULL){
 
     alpha <- 0.05
 
+  }else if(spec_num == 3){ # Linear, 1-dim, larger C_max
+
+    trueC_min <- 1/5
+    trueC_max <- 5
+    trueC <- seq(from = trueC_min, to = trueC_max, length.out = trueC_len)
+
+    d <- 1
+    mon_ind <- c(1)
+
+    spec <- "Lin"
+    sd_spec <- "hom"
+    X_dist = "equi"
+
+    alpha <- 0.05
   }
 
   return(list(d = d, mon_ind = mon_ind, trueC = trueC, fcn_spec = spec, sd_spec = sd_spec,
