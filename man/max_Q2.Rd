@@ -2,24 +2,21 @@
 % Please edit documentation in R/CI_intsec_RD.R
 \name{max_Q2}
 \alias{max_Q2}
-\title{Quantile of Maximum of Multivariate Normal Random Variable}
+\title{Quantile of Maximum of Multivariate Normal Random Variable 2}
 \usage{
-max_Q2(covmat, alpha, num_sim = 10^4)
+max_Q2(covmat, alpha)
 }
 \arguments{
 \item{covmat}{covariance matrix of the multivariate normal random variable.}
 
 \item{alpha}{desired upper quantile value.}
-
-\item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
 }
 \value{
 \eqn{(1 - \alpha)}th quantile of maximum of a multivariate normal random variable.
 }
 \description{
 Calculates the quantile of maximum of a multivariate normal random variable,
-by a Monte Carlo simulation method.
+using multivariate normal distribution function calculation.
 }
 \examples{
 covmat <- matrix(c(1, 0.5, 0.5, 1), 2, 2)

@@ -12,6 +12,7 @@ tau_calc(
   sigma_t,
   sigma_c,
   alpha,
+  num_sim = 10^5,
   delta_init = 1.96,
   hmat_init
 )
@@ -32,6 +33,9 @@ tau_calc(
 (either length 1 or \eqn{n_c}).}
 
 \item{alpha}{desired upper quantile value.}
+
+\item{num_sim}{number of simulations used to calculate the quantile;
+the default is \code{10^4}.}
 
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
