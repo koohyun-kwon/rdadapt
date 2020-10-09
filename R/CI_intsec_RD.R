@@ -35,7 +35,7 @@
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -43,6 +43,7 @@
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' cov_calc(1, 0.2, 0.4, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' cov_calc(1, 0.2, 0.4, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
                      sigma_t, sigma_c, ht_j, hc_j, ht_k, hc_k){
 
@@ -80,6 +81,7 @@ cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
 #' it can be left unspecified if
 #' \code{hmat} is specified.
 #' @param Cvec a sequence of smoothness parameters
+#' @param Cbar the Lipschitz coefficient for the largest function space we consider
 #' @inheritParams cov_calc
 #' @param hmat a \eqn{J} by {2} matrix of modulus values;
 #' it can be left unspecified if \code{delta} is specified.
@@ -90,18 +92,18 @@ cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' cov_mat_calc(1, (1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c)
-cov_mat_calc <- function(delta, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat){
+#' cov_mat_calc(1, (1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' cov_mat_calc(1, (1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
+cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat){
 
   J <- length(Cvec)
-  Cbar <- max(Cvec)
 
   if(missing(hmat)){
 
@@ -207,19 +209,19 @@ max_Q2 <- function(covmat, alpha){
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' tau_calc((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
-tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
+#' tau_calc((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+#' tau_calc((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+tau_calc <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                     num_sim = 10^5, delta_init = 1.96, hmat_init){
 
   J <- length(Cvec)
-  Cbar <- max(Cvec)
 
   if(missing(hmat_init)){
 
@@ -235,7 +237,7 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     }
   }
 
-  covmat <- cov_mat_calc(delta_init, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
+  covmat <- cov_mat_calc(delta_init, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
   del_sol <- max_Q(covmat, alpha, num_sim)
   tau_sol <- 1 - stats::pnorm(del_sol)
 
@@ -262,7 +264,7 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -271,12 +273,12 @@ tau_calc <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-#' CI_adpt_L((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
-CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
+#' CI_adpt_L((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+#' CI_adpt_L((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
                       num_sim = 10^5, delta_init = 1.96, hmat_init, hmat){
 
   J <- length(Cvec)
-  Cbar <- max(Cvec)
 
   if(missing(hmat_init)){
 
@@ -292,7 +294,7 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
     }
   }
 
-  tau_res <- tau_calc(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, num_sim,
+  tau_res <- tau_calc(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, num_sim,
                       delta_init, hmat_init)
   tau_sol <- tau_res$tau_sol
   del_sol <- tau_res$del_sol
@@ -326,7 +328,9 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
 }
 
 
-#' Title
+#' Adaptive Confidence Interval
+#'
+#' Calculates the one-sided or two-sided adaptive confidence interval
 #'
 #' @inheritParams CI_adpt_L
 #' @param lower calculate a lower one-sided confidence interval if \code{TRUE};
@@ -342,7 +346,7 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -351,9 +355,10 @@ CI_adpt_L <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = FALSE)
-#' CI_adpt((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
-CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower = FALSE, num_sim = 10^5,
+#' CI_adpt((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = FALSE)
+#' CI_adpt((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
+#' CI_adpt((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
+CI_adpt <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lower = FALSE, num_sim = 10^5,
                     delta_init = 1.96, hmat_init_L, hmat_L){
 
   if(class(Xt) != "matrix" | class(Xc) != "matrix"){
@@ -362,14 +367,12 @@ CI_adpt <- function(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, lowe
 
   if(lower == T){
 
-    res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, num_sim,
+    res_L <- CI_adpt_L(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, num_sim,
                      delta_init = 1.96, hmat_init_L, hmat_L)
     res <- c(res_L$CI, Inf)
   }else{
 
-    Cbar <- max(Cvec)
-
-    res_L <- CI_adpt_L(Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2, num_sim,
+    res_L <- CI_adpt_L(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2, num_sim,
                        delta_init = 1.96, hmat_init_L, hmat_L)
     CI_L <- res_L$CI
 
