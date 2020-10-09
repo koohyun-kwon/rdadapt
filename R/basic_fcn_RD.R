@@ -106,6 +106,7 @@ Norm <- function(X, p = 1, invw = 1) {
 #' mon_ind <- c(1, 2)
 #' C_pair <- c(0.5, 1)
 #' K_fun(1, C_pair, X, mon_ind)
+#' K_fun(1, c(Inf, 1), X, mon_ind)
 K_fun <- function(b, C_pair, X, mon_ind, swap = FALSE){
 
   if (swap) {
@@ -118,8 +119,14 @@ K_fun <- function(b, C_pair, X, mon_ind, swap = FALSE){
 
   }else{
 
-    res <- pos(1 - (C_pair[1] / b) * Norm(Vplus(X, mon_ind)) -
-               (C_pair[2] / b) * Norm(Vminus(X, mon_ind)))
+    comp1 <- (C_pair[1] / b) * Norm(Vplus(X, mon_ind))
+    comp2 <- (C_pair[2] / b) * Norm(Vminus(X, mon_ind))
+
+    # Adjustment for C = Inf
+    comp1[Norm(Vplus(X, mon_ind)) == 0] = 0
+    comp2[Norm(Vminus(X, mon_ind)) == 0] = 0
+
+    res <- pos(1 - comp1 - comp2)
   }
 
   return(res)
