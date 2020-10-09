@@ -19,6 +19,7 @@
 #' C_pair <- c(0.5, 1)
 #' sigma <- c(1, 2, 1)
 #' invmod(1, C_pair, X, mon_ind, sigma)
+#' invmod(1, c(Inf, 1), X, mon_ind, sigma)
 invmod <- function(b, C_pair, X, mon_ind, sigma, swap = FALSE){
 
   if (!(length(sigma) %in% c(1, nrow(X)))) {
@@ -46,15 +47,23 @@ invmod <- function(b, C_pair, X, mon_ind, sigma, swap = FALSE){
 #' @examples X <- matrix(c(1, -2, -3, 4, 5, -6), nrow = 3, ncol = 2)
 #' mon_ind <- c(1, 2)
 #' C_pair <- c(0.5, 1)
+#' C_pair2 <- c(Inf, 1)
 #' minb_fun(C_pair, X, mon_ind)
+#' minb_fun(C_pair2, X, mon_ind)
 minb_fun <- function(C_pair, X, mon_ind, swap = FALSE){
 
   if (swap) {
     C_pair <- C_pair[2:1]
   }
 
-  minb <- min(C_pair[1] * Norm(Vplus(X, mon_ind)) +
-                C_pair[2] * Norm(Vminus(X, mon_ind)))
+  b1 <- C_pair[1] * Norm(Vplus(X, mon_ind))
+  b2 <- C_pair[2] * Norm(Vminus(X, mon_ind))
+
+  # Adjustment for the case where C = Inf
+  b1[Norm(Vplus(X, mon_ind)) == 0] = 0
+  b2[Norm(Vminus(X, mon_ind)) == 0] = 0
+
+  minb <- min(b1 + b2)
 
   return(minb)
 }
@@ -84,7 +93,7 @@ minb_fun <- function(C_pair, X, mon_ind, swap = FALSE){
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' C_pair <- c(0.1, 0.2)
@@ -92,6 +101,8 @@ minb_fun <- function(C_pair, X, mon_ind, swap = FALSE){
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
+#' invmod_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' C_pair[1] = Inf
 #' invmod_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c)
 invmod_RD <- function(b, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE){
 
@@ -164,7 +175,7 @@ invmod_RD <- function(b, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' C_pair <- c(0.1, 0.2)
@@ -172,6 +183,8 @@ invmod_RD <- function(b, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
+#' modsol_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE)
+#' C_pair[1] <- Inf
 #' modsol_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE)
 modsol_RD <- function(delta, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE){
 
