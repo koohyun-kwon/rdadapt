@@ -62,7 +62,7 @@ Calculates the lower end point of the adaptive CI for the RD parameter.
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 mon_ind <- c(1, 2)
@@ -71,6 +71,8 @@ sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
 Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-c_hat_lower_RD(1, 1/2, 1, Xt, Xc, mon_ind,
-sigma_t, sigma_c, Yt, Yc, 0.05)
+c_hat_lower_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c,
+Yt, Yc, 0.05)
+c_hat_lower_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c,
+Yt, Yc, 0.05)
 }

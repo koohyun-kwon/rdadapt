@@ -38,7 +38,7 @@ Calculates the modulus of continuity for the RD parameter.
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 C_pair <- c(0.1, 0.2)
@@ -46,5 +46,7 @@ mon_ind <- c(1, 2)
 sigma <- rnorm(n)^2 + 1
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
+modsol_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE)
+C_pair[1] <- Inf
 modsol_RD(1, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = FALSE)
 }

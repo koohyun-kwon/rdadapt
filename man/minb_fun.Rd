@@ -25,5 +25,7 @@ Calculates the smallest possible modulus value, i.e., \eqn{\omega(0)}.
 X <- matrix(c(1, -2, -3, 4, 5, -6), nrow = 3, ncol = 2)
 mon_ind <- c(1, 2)
 C_pair <- c(0.5, 1)
+C_pair2 <- c(Inf, 1)
 minb_fun(C_pair, X, mon_ind)
+minb_fun(C_pair2, X, mon_ind)
 }

@@ -6,6 +6,7 @@
 \usage{
 CI_adpt_L(
   Cvec,
+  Cbar,
   Xt,
   Xc,
   mon_ind,
@@ -22,6 +23,8 @@ CI_adpt_L(
 }
 \arguments{
 \item{Cvec}{a sequence of smoothness parameters}
+
+\item{Cbar}{the Lipschitz coefficient for the largest function space we consider}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
@@ -66,7 +69,7 @@ Calculates the value of the lower end of the adaptive confidence interval.
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 mon_ind <- c(1, 2)
@@ -75,5 +78,6 @@ sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
 Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-CI_adpt_L((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_adpt_L((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
+CI_adpt_L((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
 }

@@ -29,4 +29,5 @@ X <- matrix(c(1, -2, -3, 4, 5, -6), nrow = 3, ncol = 2)
 mon_ind <- c(1, 2)
 C_pair <- c(0.5, 1)
 K_fun(1, C_pair, X, mon_ind)
+K_fun(1, c(Inf, 1), X, mon_ind)
 }

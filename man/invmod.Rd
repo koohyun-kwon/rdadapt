@@ -33,4 +33,5 @@ mon_ind <- c(1, 2)
 C_pair <- c(0.5, 1)
 sigma <- c(1, 2, 1)
 invmod(1, C_pair, X, mon_ind, sigma)
+invmod(1, c(Inf, 1), X, mon_ind, sigma)
 }

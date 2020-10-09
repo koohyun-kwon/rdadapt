@@ -4,7 +4,7 @@
 \alias{cov_mat_calc}
 \title{Covariance Matrix Calculation for Multiple Estimators}
 \usage{
-cov_mat_calc(delta, Cvec, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat)
+cov_mat_calc(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat)
 }
 \arguments{
 \item{delta}{a nonegative scalar value;
@@ -12,6 +12,8 @@ it can be left unspecified if
 \code{hmat} is specified.}
 
 \item{Cvec}{a sequence of smoothness parameters}
+
+\item{Cbar}{the Lipschitz coefficient for the largest function space we consider}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
@@ -39,12 +41,13 @@ Calculates the covariance matrix of \eqn{J} estimators,
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 mon_ind <- c(1, 2)
 sigma <- rnorm(n)^2 + 1
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
-cov_mat_calc(1, (1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c)
+cov_mat_calc(1, (1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+cov_mat_calc(1, (1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 }
