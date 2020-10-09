@@ -6,6 +6,7 @@
 \usage{
 tau_calc(
   Cvec,
+  Cbar,
   Xt,
   Xc,
   mon_ind,
@@ -19,6 +20,8 @@ tau_calc(
 }
 \arguments{
 \item{Cvec}{a sequence of smoothness parameters}
+
+\item{Cbar}{the Lipschitz coefficient for the largest function space we consider}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
@@ -56,12 +59,13 @@ that ensure the proper coverage of the intersection confidence interval.
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 mon_ind <- c(1, 2)
 sigma <- rnorm(n)^2 + 1
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
-tau_calc((1:5)/5, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+tau_calc((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
+tau_calc((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 }

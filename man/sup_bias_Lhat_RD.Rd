@@ -43,7 +43,7 @@ Calculates the worst case bias of the estimator
 n <- 500
 d <- 2
 X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-tind <- X[, 1] > 0 & X[, 2] > 0
+tind <- X[, 1] < 0 & X[, 2] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
 mon_ind <- c(1, 2)
@@ -51,4 +51,5 @@ sigma <- rnorm(n)^2 + 1
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
 sup_bias_Lhat_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+sup_bias_Lhat_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 }
