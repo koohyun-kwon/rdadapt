@@ -20,7 +20,7 @@
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -28,6 +28,7 @@
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' bw_adpt(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' bw_adpt(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 
   C_pair = c(Cbar, Cj)
@@ -70,7 +71,7 @@ bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -79,8 +80,8 @@ bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-#' Lhat_fun_RD (1, 1/2, 1, Xt, Xc, mon_ind,
-#' sigma_t, sigma_c, Yt, Yc)
+#' Lhat_fun_RD (1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc)
+#' Lhat_fun_RD (1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc)
 Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
                         sigma_t, sigma_c, Yt, Yc, ht, hc) {
 
@@ -129,7 +130,7 @@ Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -137,6 +138,7 @@ Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' a_fun(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' a_fun(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 
   if(missing(ht) | missing(hc)){
@@ -176,7 +178,7 @@ a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -184,6 +186,7 @@ a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' sup_bias_Lhat_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' sup_bias_Lhat_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
                              sigma_t, sigma_c, ht, hc){
 
@@ -216,15 +219,15 @@ sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' sd_Lhat_RD(1, 0.5, 1, Xt, Xc, mon_ind,
-#' sigma_t, sigma_c)
+#' sd_Lhat_RD(1, 0.5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' sd_Lhat_RD(1, 0.5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
 sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
                        sigma_t, sigma_c, ht, hc){
 
@@ -256,7 +259,7 @@ sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 #' @examples n <- 500
 #' d <- 2
 #' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] > 0 & X[, 2] > 0
+#' tind <- X[, 1] < 0 & X[, 2] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
@@ -265,8 +268,10 @@ sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 #' Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-#' c_hat_lower_RD(1, 1/2, 1, Xt, Xc, mon_ind,
-#' sigma_t, sigma_c, Yt, Yc, 0.05)
+#' c_hat_lower_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c,
+#' Yt, Yc, 0.05)
+#' c_hat_lower_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c,
+#' Yt, Yc, 0.05)
 c_hat_lower_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
                            sigma_t, sigma_c, Yt, Yc, tau, ht, hc) {
 
