@@ -22,7 +22,7 @@ A numeric vector with the length equal to nrow(X);
 if b = 0, returns 0 vector.
 }
 \description{
-Calculates \eqn{K(x/b; C, C')}.
+Calculates \eqn{K(x/b; C, C')} in our previous draft.
 }
 \examples{
 X <- matrix(c(1, -2, -3, 4, 5, -6), nrow = 3, ncol = 2)
