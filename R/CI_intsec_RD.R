@@ -121,20 +121,25 @@ cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, h
 
   res <- diag(1, J, J)
 
-  for(j in 1:(J - 1)){
+  # May be possible to make this code more efficient using outer product
 
-    for(k in (j + 1):J){
+  if(J > 1){
 
-      Cj <- Cvec[j]
-      Ck <- Cvec[k]
-      ht_j <- hmat[j, 1]
-      hc_j <- hmat[j, 2]
-      ht_k <- hmat[k, 1]
-      hc_k <- hmat[k, 2]
+    for(j in 1:(J - 1)){
 
-      res[j, k] <- cov_calc(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
-                            sigma_t, sigma_c, ht_j, hc_j, ht_k, hc_k)
-      res[k, j] <- res[j, k]
+      for(k in (j + 1):J){
+
+        Cj <- Cvec[j]
+        Ck <- Cvec[k]
+        ht_j <- hmat[j, 1]
+        hc_j <- hmat[j, 2]
+        ht_k <- hmat[k, 1]
+        hc_k <- hmat[k, 2]
+
+        res[j, k] <- cov_calc(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
+                              sigma_t, sigma_c, ht_j, hc_j, ht_k, hc_k)
+        res[k, j] <- res[j, k]
+      }
     }
   }
 
