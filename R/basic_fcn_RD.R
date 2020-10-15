@@ -88,9 +88,10 @@ Norm <- function(X, p = 1, invw = 1) {
   return(rowSums(abs(Xw)^p)^(1/p))
 }
 
+
 #' Kernel Function for Adaptive Procedures
 #'
-#' Calculates \eqn{K(x/b; C, C')}.
+#' Calculates \eqn{K(x/b; C, C')} in our previous draft.
 #'
 #' @param b "bandwidth" parameter.
 #' @param C_pair a pair of smoothness parameters \eqn{(C, C')}
