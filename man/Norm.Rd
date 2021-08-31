@@ -9,10 +9,11 @@ Norm(X, p = 1, invw = 1)
 \arguments{
 \item{X}{A numeric matrix.}
 
-\item{p}{Order of the norm.}
+\item{p}{Order of the norm; the default is \code{p = 1} (L1 norm).}
 
 \item{invw}{Inverse weights for each component,
-with the length equal to either 1 or \code{ncol(X)}.}
+with the length equal to either 1 or \code{ncol(X)}; the default is
+\code{invw = 1}.}
 }
 \value{
 A vector of the dimension equal to the \code{nrow(X)}.

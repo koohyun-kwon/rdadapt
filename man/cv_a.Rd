@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_mm.R
 \name{cv_a}
 \alias{cv_a}
-\title{\eqn{cv_\alpha(t)} Function}
+\title{Quantile of Folded Normal Distribution}
 \usage{
 cv_a(t, alpha)
 }
@@ -15,7 +15,7 @@ cv_a(t, alpha)
 the quantile value
 }
 \description{
-\eqn{cv_\alpha(t)} Function
+Calculates the \eqn{1 - \alpha} quantile of \eqn{|N(t, 1)|}.
 }
 \examples{
 cv_a(1, 0.05)

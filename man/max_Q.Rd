@@ -12,7 +12,7 @@ max_Q(covmat, alpha, num_sim = 10^5)
 \item{alpha}{desired upper quantile value.}
 
 \item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
+the default is \code{10^5}.}
 }
 \value{
 \eqn{(1 - \alpha)}th quantile of maximum of a multivariate normal random variable.

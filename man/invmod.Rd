@@ -25,7 +25,7 @@ the value of inverse modulus given \eqn{\omega = b}.
 \description{
 Calculates the inverse modulus for the regression function at a point
 problem. More specifically, this calcultes
-\eqn{\omega^{-1}(b, \Lambda_{V+}(C),\Lambda_{V+}(C')) }
+\eqn{\omega^{-1}(b, \Lambda_{V+}(C),\Lambda_{V+}(C')) }.
 }
 \examples{
 X <- matrix(c(1, -2, -3, 4, 5, -6), nrow = 3, ncol = 2)

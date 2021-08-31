@@ -37,6 +37,10 @@ a \eqn{J} by \eqn{J} covariance matrix.
 Calculates the covariance matrix of \eqn{J} estimators,
 \eqn{Lhat_1(\delta)},..., \eqn{Lhat_J(\delta)}.
 }
+\details{
+This constructs a covariance matrix corresponding to
+expressions (17) and (18) of our paper.
+}
 \examples{
 n <- 500
 d <- 2

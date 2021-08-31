@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_const_RD.R
 \name{sup_bias_Lhat_RD}
 \alias{sup_bias_Lhat_RD}
-\title{Worst-case Bias of Estimator}
+\title{Worst-case Bias}
 \usage{
 sup_bias_Lhat_RD(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc)
 }
@@ -38,6 +38,9 @@ a scalar value
 \description{
 Calculates the worst case bias of the estimator
 \eqn{Lhat_j(\delta)}.
+}
+\details{
+This corresponds to expression (16) of our paper
 }
 \examples{
 n <- 500

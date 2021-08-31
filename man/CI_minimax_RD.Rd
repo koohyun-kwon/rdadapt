@@ -11,13 +11,20 @@ CI_minimax_RD(
   Xc,
   C_max,
   mon_ind,
+  se.method = c("nn", "supplied", "nn.test"),
+  se.init = c("Silverman", "nn", "supplied", "supp.sep", "S.test"),
+  t.dir = c("left", "right"),
+  alpha,
+  N = 3,
   sigma_t,
   sigma_c,
-  alpha,
+  sigma_t.init,
+  sigma_c.init,
   opt_b = NULL,
   min_half_length = NULL,
   maxb.const = 10,
-  Prov.Plot = FALSE
+  Prov.Plot = FALSE,
+  len.return = FALSE
 )
 }
 \arguments{
@@ -33,13 +40,25 @@ CI_minimax_RD(
 
 \item{mon_ind}{index number for monotone variables.}
 
-\item{sigma_t}{standard deviation of the error term for the treated units
-(either length 1 or \eqn{n_t}).}
+\item{se.method}{the standard deviation estimation method.}
 
-\item{sigma_c}{standard deviation of the error term for the control units
-(either length 1 or \eqn{n_c}).}
+\item{se.init}{the standard deviation estimation method for choosing an optimal estimator.}
+
+\item{t.dir}{treatment direction; \code{t.dir = "left"} if \eqn{x < 0} is treated.
+Otherwise, \code{t.dir = "right"}. This should specified only for one-dimensional cases.}
 
 \item{alpha}{the desired level of non-coverage}
+
+\item{N}{the number of neighbors to be used when \code{se.method = "nn"};
+the default is \code{N = 3}.}
+
+\item{sigma_t}{supplied variance for treated observations.}
+
+\item{sigma_c}{supplied variance for control observations.}
+
+\item{sigma_t.init}{supplied first-stage variance for treated observations.}
+
+\item{sigma_c.init}{supplied first-stage variance for control observations.}
 
 \item{opt_b}{provided if the optimal modulus value is known; default is \code{NULL}.}
 
@@ -50,12 +69,20 @@ default is \code{NULL}.}
 
 \item{Prov.Plot}{if \code{TRUE}, provides a plot that can be used to check the optimization
 worked well; default is \code{FALSE}.}
+
+\item{len.return}{if \code{TRUE}, returns only the optimal half-length;
+default is \code{FALSE}.}
 }
 \value{
-the left and right ends of the confidence interval
+returns a list with the confidence interval (\code{ci}), the standard deviation
+of the estimator (\code{sd}), and the bandwidths used for the treated observations and
+the control observations (\code{h.t} and \code{h.c})
 }
 \description{
-Minimax Confidence Interval
+Calculates the minimax confidence interval.
+}
+\details{
+So far, conditional variance estimation works only for one-dimensional case.
 }
 \examples{
 n <- 500
@@ -71,6 +98,20 @@ sigma_c <- sigma[tind == 0]
 Yt <- 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 Yc <- rnorm(length(sigma_c), mean = 0, sd = sigma_c)
 C_max <- 1
-CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, sigma_t, sigma_c, 0.05)
-CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, NULL, sigma_t, sigma_c, 0.05)
+CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, "nn.test", "S.test", alpha = 0.05)
+d <- 1
+X <- rnorm(n)
+tind <- X < 0
+Xt <- X[tind == 1]
+Xc <- X[tind == 0]
+mon_ind <- 1
+sigma <- rep(1, n)
+sigma_t <- sigma[tind == 1]
+sigma_c <- sigma[tind == 0]
+Yt <- 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
+Yc <- rnorm(length(sigma_c), mean = 0, sd = sigma_c)
+CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, "nn", "Silverman", t.dir = "left",
+alpha = 0.05)
+CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, "nn", "nn", t.dir = "left",
+alpha = 0.05)
 }

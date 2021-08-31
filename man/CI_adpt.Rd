@@ -15,11 +15,12 @@ CI_adpt(
   Yt,
   Yc,
   alpha,
-  lower = FALSE,
+  lower = TRUE,
   num_sim = 10^5,
   delta_init = 1.96,
   hmat_init_L,
-  hmat_L
+  hmat_L,
+  tau_res
 )
 }
 \arguments{
@@ -49,7 +50,7 @@ CI_adpt(
 calculate a two-sided CI otherwise.}
 
 \item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
+the default is \code{10^5}.}
 
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
@@ -59,12 +60,20 @@ and \code{Cvec}; it can be left unspecified.}
 
 \item{hmat_L}{the matrix of modulus values corresponding to
 the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.}
+
+\item{tau_res}{outcome value from the function \code{tau_res}; it can be
+left unspecified.}
 }
 \value{
 confidence interval endpoints.
 }
 \description{
 Calculates the one-sided or two-sided adaptive confidence interval
+}
+\details{
+This returns either one-sided lower CI or two-sided Bonferroni CI using
+the function CI_adpt_L; it seems this function will be substituted by
+\code{CI_adpt_opt} defined below.
 }
 \examples{
 n <- 500

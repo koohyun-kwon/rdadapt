@@ -18,7 +18,8 @@ CI_adpt_L(
   num_sim = 10^5,
   delta_init = 1.96,
   hmat_init,
-  hmat
+  hmat,
+  tau_res
 )
 }
 \arguments{
@@ -45,7 +46,7 @@ CI_adpt_L(
 \item{alpha}{desired upper quantile value.}
 
 \item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
+the default is \code{10^5}.}
 
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
@@ -55,6 +56,9 @@ and \code{Cvec}; it can be left unspecified.}
 
 \item{hmat}{the matrix of modulus values corresponding to
 the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.}
+
+\item{tau_res}{outcome value from the function \code{tau_res}; it can be
+left unspecified.}
 }
 \value{
 a list components \code{CI} which gives the value of

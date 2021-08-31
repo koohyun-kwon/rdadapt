@@ -38,7 +38,7 @@ tau_calc(
 \item{alpha}{desired upper quantile value.}
 
 \item{num_sim}{number of simulations used to calculate the quantile;
-the default is \code{10^4}.}
+the default is \code{10^5}.}
 
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
@@ -54,6 +54,9 @@ value of \eqn{\delta}.
 \description{
 Calculates the (non-)coverage probabilities of individual confidence intervals
 that ensure the proper coverage of the intersection confidence interval.
+}
+\details{
+This solves (19) of our paper, using the asymptotic argument provided in the paper.
 }
 \examples{
 n <- 500

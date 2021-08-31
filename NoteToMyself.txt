@@ -1,0 +1,7 @@
+- implementation for mm, 1d - Done
+- simulation for mm, 1d
+- coding for adpt, 1d
+- simulation for adpt, 1d
+- clean up the documentation (as well as variable order)
+- what about 2d variance? (consider np::npregbw)
+- what's the problem with my sigmaNN function?

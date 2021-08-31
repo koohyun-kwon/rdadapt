@@ -39,6 +39,9 @@ a scalar value
 Calculates the standard deviation of the estimator
 \eqn{Lhat_j(\delta)}.
 }
+\details{
+This corresponds to \eqn{s} function defined in Section 2.2 of our paper.
+}
 \examples{
 n <- 500
 d <- 2

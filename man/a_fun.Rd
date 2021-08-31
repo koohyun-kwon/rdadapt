@@ -36,7 +36,10 @@ it can be left unspecified if \code{delta} is specified.}
 a scalar value
 }
 \description{
-Calculates 0.5 * \eqn{(a_{jt} - a_{jc})} in the worst-case formula.
+Calculates 0.5 * \eqn{(a_{t} - a_{c})} in the worst-case formula.
+}
+\details{
+This correponds to the component in the expression (16) of our paper.
 }
 \examples{
 n <- 500

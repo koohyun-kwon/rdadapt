@@ -18,6 +18,10 @@ max_Q2(covmat, alpha)
 Calculates the quantile of maximum of a multivariate normal random variable,
 using multivariate normal distribution function calculation.
 }
+\details{
+This function was created for a test purpose; it is not used since it is slow for
+large \eqn{J}.
+}
 \examples{
 covmat <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
 max_Q2(covmat, 0.05)

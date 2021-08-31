@@ -14,17 +14,17 @@ l_adpt(
   sigma_t,
   sigma_c,
   alpha,
-  sim = 10^5,
+  n_sim = 10^5,
   tau_res,
   hmat
 )
 }
 \arguments{
-\item{Cpr}{\eqn{C'} in the paper}
+\item{Cpr}{the Lipschitz coefficient where the distance is evaluated at.}
 
 \item{Cvec}{a sequence of smoothness parameters}
 
-\item{C}{the Lipschitz coefficient for the function space we consider}
+\item{C}{the Lipschitz coefficient for the function space we consider.}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
@@ -40,16 +40,18 @@ l_adpt(
 
 \item{alpha}{desired upper quantile value.}
 
-\item{sim}{number of simulated observations to calculate the
-expectation of the minimum of multivariate normal random variables.}
+\item{n_sim}{number of simulated observations to calculate the
+expectation of the minimum of multivariate normal random variables;
+the default is \code{n_sim = 10^5}.}
 
-\item{tau_res}{a list produced by \code{tau_calc}; can be left unspecified}
+\item{tau_res}{a list produced by the function \code{tau_calc};
+can be left unspecified.}
 
 \item{hmat}{a matrix of bandwidths to be used in the adaptive procedure;
-can be left unspecified}
+can be left unspecified.}
 }
 \description{
-Worst-case Excess Length of the Adaptive Procedure
+Calculates E[U_{min}] in Proposition 4.4 of the paper (Ver20201104).
 }
 \examples{
 n <- 500

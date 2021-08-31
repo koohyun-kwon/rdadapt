@@ -4,7 +4,21 @@
 \alias{Lhat_fun_RD}
 \title{Estimator for the Adaptive CI}
 \usage{
-Lhat_fun_RD(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, ht, hc)
+Lhat_fun_RD(
+  delta,
+  Cj,
+  Cbar,
+  Xt,
+  Xc,
+  mon_ind,
+  sigma_t,
+  sigma_c,
+  Yt,
+  Yc,
+  ht,
+  hc,
+  ret.w = FALSE
+)
 }
 \arguments{
 \item{delta}{a nonegative scalar value:
@@ -35,6 +49,8 @@ it can be left unspecified if \code{delta} is specified.}
 
 \item{hc}{the modulus value for the control observations;
 it can be left unspecified if \code{delta} is specified.}
+
+\item{ret.w}{returns weights vector if \code{TRUE}.}
 }
 \value{
 a scalar value of the estimator

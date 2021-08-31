@@ -7,9 +7,9 @@
 l_orc(Cpr, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 }
 \arguments{
-\item{Cpr}{\eqn{C'} in the paper}
+\item{Cpr}{the Lipschitz coefficient where the distance is evaluated at.}
 
-\item{C}{the Lipschitz coefficient for the function space we consider}
+\item{C}{the Lipschitz coefficient for the function space we consider.}
 
 \item{Xt}{\eqn{n_t} by \eqn{k} design matrix for the treated units.}
 
@@ -26,7 +26,8 @@ l_orc(Cpr, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 \item{alpha}{desired upper quantile value.}
 }
 \description{
-Oracle Excess Length
+Calculates the expression for \eqn{\ell(C';C)}
+in Proposition 4.4 of the paper (Ver20201104).
 }
 \examples{
 n <- 500

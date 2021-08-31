@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_mm.R
 \name{CI_length_RD}
 \alias{CI_length_RD}
-\title{Minimum CI Half-length}
+\title{Minimum CI Half-length Function}
 \usage{
 CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 }
@@ -29,7 +29,12 @@ CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 the length of CI corresponding to the modulus value \code{b}
 }
 \description{
-Minimum CI Half-length
+Calculates the minimum CI half-length, as a function of the modulus value.
+}
+\details{
+In the paper, the minimum CI half-length is expressed as a function of \eqn{\delta};
+here, we use the relationship that \eqn{\delta} is the inverse modulus value
+given \eqn{b}.
 }
 \examples{
 n <- 500

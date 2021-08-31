@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_const_RD.R
 \name{bw_adpt}
 \alias{bw_adpt}
-\title{Bandwidths Calculation}
+\title{Between Modulus Calculation}
 \usage{
 bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
 }
@@ -29,8 +29,8 @@ bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
 a list of two values, \code{h_jt} and \code{h_jc}.
 }
 \description{
-Calculates the bandwidths \eqn{h_{jt}} and \eqn{h_{jc}}
-for a given value of \eqn{\delta}.
+Calculates the between moduli \eqn{h_{jt}} and \eqn{h_{jc}}
+for a given value of \eqn{\delta} and \eqn{C_j}.
 }
 \examples{
 n <- 500

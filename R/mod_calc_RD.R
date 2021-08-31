@@ -2,7 +2,7 @@
 #'
 #' Calculates the inverse modulus for the regression function at a point
 #' problem. More specifically, this calcultes
-#' \eqn{\omega^{-1}(b, \Lambda_{V+}(C),\Lambda_{V+}(C')) }
+#' \eqn{\omega^{-1}(b, \Lambda_{V+}(C),\Lambda_{V+}(C')) }.
 #'
 #' @param b point where the inverse modulus is evaluated at.
 #' @param C_pair a pair of smoothness parameters \eqn{(C, C')}.
@@ -70,8 +70,7 @@ minb_fun <- function(C_pair, X, mon_ind, swap = FALSE){
 
 #' Inverse Modulus for RD Parameter
 #'
-#' Calculates the inverse modulus for the RDD
-#' problem.
+#' Calculates the inverse modulus for the RDD problem.
 #'
 #' @param b point where the inverse modulus is evaluated at.
 #' @param C_pair a pair of smoothness parameters \eqn{(C, C')}.
@@ -192,8 +191,6 @@ modsol_RD <- function(delta, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = F
     C_pair <- C_pair[2:1]
   }
 
-  maxint <- 100 # An arbitrary large number; doesn't affect the result
-
   minbt <- minb_fun(C_pair, Xt, mon_ind)
   minbc <- minb_fun(C_pair, Xc, mon_ind, swap = TRUE)
   minb <- minbt + minbc
@@ -208,6 +205,7 @@ modsol_RD <- function(delta, C_pair, Xt, Xc, mon_ind, sigma_t, sigma_c, swap = F
     return(res)
   }
 
+  maxint <- 100 # An arbitrary large number; doesn't affect the result
   solve <- stats::uniroot(eqn_fun, c(minb, maxint), extendInt = "upX",
                           tol = .Machine$double.eps^10)
   bsol <- solve$root

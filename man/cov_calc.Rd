@@ -66,6 +66,9 @@ a scalar covariance value.
 Calculates the covariance between two estimators,
 \eqn{Lhat_j(\delta)} and \eqn{Lhat_k(\delta)}.
 }
+\details{
+This corresponds to the expressions (17) and (18) of our paper.
+}
 \examples{
 n <- 500
 d <- 2

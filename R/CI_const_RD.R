@@ -1,7 +1,7 @@
-#' Bandwidths Calculation
+#' Between Modulus Calculation
 #'
-#' Calculates the bandwidths \eqn{h_{jt}} and \eqn{h_{jc}}
-#' for a given value of \eqn{\delta}.
+#' Calculates the between moduli \eqn{h_{jt}} and \eqn{h_{jc}}
+#' for a given value of \eqn{\delta} and \eqn{C_j}.
 #'
 #' @param delta a nonnegative value of \eqn{\delta}.
 #' @param Cj the smoothness parameter aiming to adapt to.
@@ -64,6 +64,7 @@ bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 #' it can be left unspecified if \code{delta} is specified.
 #' @param hc the modulus value for the control observations;
 #' it can be left unspecified if \code{delta} is specified.
+#' @param ret.w returns weights vector if \code{TRUE}.
 #'
 #' @return a scalar value of the estimator
 #' @export
@@ -83,7 +84,8 @@ bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 #' Lhat_fun_RD (1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc)
 #' Lhat_fun_RD (1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc)
 Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
-                        sigma_t, sigma_c, Yt, Yc, ht, hc) {
+                        sigma_t, sigma_c, Yt, Yc, ht, hc,
+                        ret.w = FALSE) {
 
   if(missing(ht) | missing(hc)){
 
@@ -100,13 +102,25 @@ Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
   denom_ic <- K_fun(b = hc, C_pair = c(Cj, Cbar), Xc, mon_ind) / sigma_c^2
   res_c <- sum(num_ic) / sum(denom_ic)
 
-  return(res_t - res_c)
+  if(ret.w == TRUE){
+
+    w_t <- (K_fun(b = ht, C_pair = c(Cbar, Cj), Xt, mon_ind) / sigma_t^2) / sum(denom_it)
+    w_c <- (K_fun(b = hc, C_pair = c(Cj, Cbar), Xc, mon_ind) / sigma_c^2) / sum(denom_ic)
+    res <- list(est = res_t - res_c, w_t = w_t, w_c = w_c)
+  }else{
+
+    res <- res_t - res_c
+  }
+
+  return(res)
 }
 
 
 #' Helper Function for Worst-case Bias Calculation
 #'
-#' Calculates 0.5 * \eqn{(a_{jt} - a_{jc})} in the worst-case formula.
+#' Calculates 0.5 * \eqn{(a_{t} - a_{c})} in the worst-case formula.
+#'
+#' This correponds to the component in the expression (16) of our paper.
 #'
 #' @param delta a nonegative scalar value:
 #' it can be left unspecified if \code{ht} and \code{hc} are specified.
@@ -165,51 +179,12 @@ a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 
 }
 
-#' Worst-case Bias of Estimator
-#'
-#' Calculates the worst case bias of the estimator
-#' \eqn{Lhat_j(\delta)}.
-#'
-#' @inheritParams a_fun
-#'
-#' @return a scalar value
-#' @export
-#'
-#' @examples n <- 500
-#' d <- 2
-#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
-#' tind <- X[, 1] < 0 & X[, 2] < 0
-#' Xt <- X[tind == 1, ,drop = FALSE]
-#' Xc <- X[tind == 0, ,drop = FALSE]
-#' mon_ind <- c(1, 2)
-#' sigma <- rnorm(n)^2 + 1
-#' sigma_t <- sigma[tind == 1]
-#' sigma_c <- sigma[tind == 0]
-#' sup_bias_Lhat_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
-#' sup_bias_Lhat_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
-sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
-                             sigma_t, sigma_c, ht, hc){
-
-  if(missing(ht) | missing(hc)){
-
-    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht <- hres$ht
-    hc <- hres$hc
-  }
-
-  res1 <- 0.5 * (ht + hc)
-  res2 <- a_fun(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc)
-  res3 <- -0.5 * (delta^2 / ht) /
-    sum(K_fun(b = ht, C_pair = c(Cbar, Cj), X = Xt, mon_ind = mon_ind) / sigma_t^2)
-
-  res <- res1 + res2 + res3
-  return(res)
-}
-
 #' Standard Deviation of Estimator
 #'
 #' Calculates the standard deviation of the estimator
 #' \eqn{Lhat_j(\delta)}.
+#'
+#' This corresponds to \eqn{s} function defined in Section 2.2 of our paper.
 #'
 #' @inheritParams a_fun
 #'
@@ -244,9 +219,55 @@ sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
   return(res)
 }
 
+#' Worst-case Bias
+#'
+#' Calculates the worst case bias of the estimator
+#' \eqn{Lhat_j(\delta)}.
+#'
+#' This corresponds to expression (16) of our paper
+#'
+#' @inheritParams a_fun
+#'
+#' @return a scalar value
+#' @export
+#'
+#' @examples n <- 500
+#' d <- 2
+#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' tind <- X[, 1] < 0 & X[, 2] < 0
+#' Xt <- X[tind == 1, ,drop = FALSE]
+#' Xc <- X[tind == 0, ,drop = FALSE]
+#' mon_ind <- c(1, 2)
+#' sigma <- rnorm(n)^2 + 1
+#' sigma_t <- sigma[tind == 1]
+#' sigma_c <- sigma[tind == 0]
+#' sup_bias_Lhat_RD(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' sup_bias_Lhat_RD(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
+sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
+                             sigma_t, sigma_c, ht, hc){
+
+  if(missing(ht) | missing(hc)){
+
+    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht <- hres$ht
+    hc <- hres$hc
+  }
+
+  res1 <- 0.5 * (ht + hc)
+  res2 <- a_fun(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc)
+  # Same as -0.5 * delta * sd_Lhat_RD
+  res3 <- -0.5 * (delta^2 / ht) /
+    sum(K_fun(b = ht, C_pair = c(Cbar, Cj), X = Xt, mon_ind = mon_ind) / sigma_t^2)
+
+  res <- res1 + res2 + res3
+  return(res)
+}
+
 #' Lower Adaptive CI for the RD Parameter
 #'
 #' Calculates the lower end point of the adaptive CI for the RD parameter.
+#'
+#' This corresponds to the lower CI defined in Section 4.2 of our paper.
 #'
 #' @inheritParams a_fun
 #' @param Yt outcome value for the treated group observations.
@@ -284,6 +305,7 @@ c_hat_lower_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
   sd <- sd_Lhat_RD(delta, Cj, Cbar, Xt, Xc, mon_ind,
                    sigma_t, sigma_c, ht, hc)
 
-  res <- lhat - sup_bias - stats::qnorm(1 - tau) * sd
+  res <- list(ci.l = lhat - sup_bias - stats::qnorm(1 - tau) * sd,
+              sd = sd)
   return(res)
 }

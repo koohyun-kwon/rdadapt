@@ -32,8 +32,7 @@ the value of the inverse modulus corresponding to the treated observations.
 \code{bc} and \code{delta_c} give the analogous values for the control observations.
 }
 \description{
-Calculates the inverse modulus for the RDD
-problem.
+Calculates the inverse modulus for the RDD problem.
 }
 \examples{
 n <- 500

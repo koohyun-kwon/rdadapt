@@ -7,18 +7,21 @@
 K_fun(b, C_pair, X, mon_ind, swap = FALSE)
 }
 \arguments{
-\item{b}{"bandwidth" parameter.}
+\item{b}{a scalar "modulus of continuity" parameter;
+can take the value of 0.}
 
-\item{C_pair}{a pair of smoothness parameters \eqn{(C, C')}}
+\item{C_pair}{a pair of smoothness parameters \eqn{(C, C')};
+can take the values of \code{Inf}.}
 
 \item{X}{data matrix.}
 
-\item{mon_ind}{index number for monotone variables.}
+\item{mon_ind}{index number for monotone variables, with length
+\code{ncol(X)}.}
 
 \item{swap}{we take (C', C) instead of (C, C') if \code{swap = TRUE}.}
 }
 \value{
-A numeric vector with the length equal to nrow(X);
+A numeric vector with the length equal to \code{nrow(X)};
 if b = 0, returns 0 vector.
 }
 \description{

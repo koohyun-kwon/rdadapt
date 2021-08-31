@@ -58,6 +58,9 @@ the value of the lower end point of the adaptive CI.
 \description{
 Calculates the lower end point of the adaptive CI for the RD parameter.
 }
+\details{
+This corresponds to the lower CI defined in Section 4.2 of our paper.
+}
 \examples{
 n <- 500
 d <- 2

@@ -12,6 +12,10 @@ LazyData: true
 RoxygenNote: 7.1.1.9000
 Imports:
     MASS,
-    mvtnorm
+    mvtnorm,
+    np,
+    RDHonest
 Suggests:
     rdrobust
+Remotes:
+    kolesarm/RDHonest
