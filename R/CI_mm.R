@@ -2,7 +2,7 @@
 #'
 #' Calculates the \eqn{1 - \alpha} quantile of \eqn{|N(t, 1)|}.
 #'
-#' @param t the non-centrality parameter.
+#' @param t non-centrality parameter.
 #' @param alpha probability
 #'
 #' @return the quantile value
@@ -21,9 +21,11 @@ cv_a <- function(t, alpha){
 #'
 #' Calculates the minimum CI half-length, as a function of the modulus value.
 #'
-#' In the paper, the minimum CI half-length is expressed as a function of \eqn{\delta};
+#' In the paper, the minimum CI half-length is expressed as a function of
+#' \eqn{\delta};
 #' here, we use the relationship that \eqn{\delta} is the inverse modulus value
 #' given \eqn{b}.
+#' The returned value of th will be minimized with respect to \eqn{b} later
 #'
 #' @inheritParams invmod_RD
 #' @param C a scalar smoothness parameter.
@@ -46,18 +48,24 @@ cv_a <- function(t, alpha){
 #' CI_length_RD(1, C, Xt, Xc, mon_ind, sigma_t , sigma_c, 0.05)
 CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 
+  # Calculate delta corresponding to b
+  # This is because sup_bias calculation is with respect to delta
   om_inv <- invmod_RD(b, rep(C, 2), Xt, Xc, mon_ind, sigma_t, sigma_c)
-
-  bc <- om_inv$bc
-  bt <- om_inv$bt
   om_inv_t <- om_inv$delta_t
   om_inv_c <- om_inv$delta_c
   delta <- sqrt(om_inv_t^2 + om_inv_c^2)
 
+  # Retrieve b_c and b_t to speed up the computation of sup_bias
+  bc <- om_inv$bc
+  bt <- om_inv$bt
+
+  # Why? Think about it
   if ((om_inv_t + om_inv_c) == 0) return(Inf)
 
-  sup_bias <- sup_bias_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
-  sup_bias <- sup_bias - a_fun(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
+  sup_bias <- sup_bias_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
+                               bt, bc)
+  sup_bias <- sup_bias - a_fun(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
+                               bt, bc)
   sd <- sd_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c, bt, bc)
 
   t <- sup_bias / sd
