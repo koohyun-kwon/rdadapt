@@ -2,7 +2,7 @@
 #'
 #' Description to be supplied.
 #'
-#' Under deveopment.
+#' Under development.
 #'
 #' @param X a vector or a matrix of the running variables, with \code{ncol(X)} being
 #' the dimension of the turnning variable when \code{X} is a matrix.
