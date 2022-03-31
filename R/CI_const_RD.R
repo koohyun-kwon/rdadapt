@@ -1,6 +1,6 @@
 #' Between Modulus Calculation
 #'
-#' Calculates the between moduli \eqn{h_{jt}} and \eqn{h_{jc}}
+#' Calculates the between moduli \eqn{b_{jt}} and \eqn{b_{jc}}
 #' for a given value of \eqn{\delta} and \eqn{C_j}.
 #'
 #' @param delta a nonnegative value of \eqn{\delta}.
@@ -27,9 +27,9 @@
 #' sigma <- rnorm(n)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' bw_adpt(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
-#' bw_adpt(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
-bw_adpt <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
+#' bw_mod(1, 1/2, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
+#' bw_mod(1, 1/2, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
+bw_mod <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c){
 
   C_pair = c(Cbar, Cj)
 
@@ -87,7 +87,7 @@ Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
     ht <- hres$bt
     hc <- hres$bc
   }
@@ -155,7 +155,7 @@ a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
     ht <- hres$bt
     hc <- hres$bc
   }
@@ -206,7 +206,7 @@ sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
     ht <- hres$bt
     hc <- hres$bc
   }
@@ -246,7 +246,7 @@ sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_adpt(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
     ht <- hres$bt
     hc <- hres$bc
   }
