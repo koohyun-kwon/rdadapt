@@ -83,12 +83,11 @@ cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
 #' expressions (17) and (18) of our paper.
 #'
 #' @param delta a nonegative scalar value;
-#' it can be left unspecified if
-#' \code{hmat} is specified.
+#' it can be left unspecified if \code{bmat} is specified.
 #' @param Cvec a sequence of smoothness parameters
 #' @param Cbar the Lipschitz coefficient for the largest function space we consider
 #' @inheritParams cov_calc
-#' @param hmat a \eqn{J} by {2} matrix of modulus values;
+#' @param bmat a \eqn{J} by {2} matrix of modulus values;
 #' it can be left unspecified if \code{delta} is specified.
 #'
 #' @return a \eqn{J} by \eqn{J} covariance matrix.
@@ -106,21 +105,22 @@ cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
 #' sigma_c <- sigma[tind == 0]
 #' cov_mat_calc(1, (1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c)
 #' cov_mat_calc(1, (1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c)
-cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat){
+cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind,
+                         sigma_t, sigma_c, bmat){
 
   J <- length(Cvec)
 
-  if(missing(hmat)){
+  if(missing(bmat)){
 
-    hmat <- matrix(0, nrow = J, ncol = 2)
+    bmat <- matrix(0, nrow = J, ncol = 2)
 
     for(j in 1:J){
 
       Cj <- Cvec[j]
 
       bres_j <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- bres_j$bt
-      hmat[j, 2] <- bres_j$bc
+      bmat[j, 1] <- bres_j$bt
+      bmat[j, 2] <- bres_j$bc
     }
   }
 
@@ -134,10 +134,10 @@ cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, h
 
         Cj <- Cvec[j]
         Ck <- Cvec[k]
-        ht_j <- hmat[j, 1]
-        hc_j <- hmat[j, 2]
-        ht_k <- hmat[k, 1]
-        hc_k <- hmat[k, 2]
+        ht_j <- bmat[j, 1]
+        hc_j <- bmat[j, 2]
+        ht_k <- bmat[k, 1]
+        hc_k <- bmat[k, 2]
 
         res[j, k] <- cov_calc(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
                               sigma_t, sigma_c, ht_j, hc_j, ht_k, hc_k)
@@ -210,7 +210,7 @@ max_Q2 <- function(covmat, alpha){
 #' @inheritParams max_Q
 #' @param delta_init the value of \eqn{\delta} to be used in simulating the quantile;
 #' theoretically, its value does not matter asymptotically. Its default value is 1.96.
-#' @param hmat_init the matrix of modulus values corresponding to \code{delta_init}
+#' @param bmat_init the matrix of modulus values corresponding to \code{delta_init}
 #' and \code{Cvec}; it can be left unspecified.
 #'
 #' @return a list of two values, \code{del_sol}, the proper value of \eqn{\delta} to be used
@@ -231,25 +231,26 @@ max_Q2 <- function(covmat, alpha){
 #' tau_calc((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 #' tau_calc((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 tau_calc <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                    num_sim = 10^5, delta_init = 1.96, hmat_init){
+                    num_sim = 10^5, delta_init = 1.96, bmat_init){
 
   J <- length(Cvec)
 
-  if(missing(hmat_init)){
+  if(missing(bmat_init)){
 
-    hmat_init <- matrix(0, nrow = J, ncol = 2)
+    bmat_init <- matrix(0, nrow = J, ncol = 2)
 
     for(j in 1:J){
 
       Cj <- Cvec[j]
 
       bres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat_init[j, 1] <- bres_j$bt
-      hmat_init[j, 2] <- bres_j$bc
+      bmat_init[j, 1] <- bres_j$bt
+      bmat_init[j, 2] <- bres_j$bc
     }
   }
 
-  covmat <- cov_mat_calc(delta_init, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat_init)
+  covmat <- cov_mat_calc(delta_init, Cvec, Cbar, Xt, Xc, mon_ind,
+                         sigma_t, sigma_c, bmat_init)
   del_sol <- max_Q(covmat, alpha, num_sim)
   tau_sol <- 1 - stats::pnorm(del_sol)
 
@@ -264,7 +265,7 @@ tau_calc <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' @inheritParams tau_calc
 #' @param Yt outcome value for the treated group observations.
 #' @param Yc outcome value for the control group observations.
-#' @param hmat the matrix of modulus values corresponding to
+#' @param bmat the matrix of modulus values corresponding to
 #' the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.
 #' @param tau_res outcome value from the function \code{tau_res}; it can be
 #' left unspecified.
@@ -290,23 +291,23 @@ tau_calc <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' CI_adpt_L((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
 #' CI_adpt_L((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05)
 CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-                      num_sim = 10^5, delta_init = 1.96, hmat_init, hmat, tau_res){
+                      num_sim = 10^5, delta_init = 1.96, bmat_init, bmat, tau_res){
 
   J <- length(Cvec)
 
-  if(missing(hmat_init)){
+  if(missing(bmat_init)){
 
-    if(missing(hmat)){
+    if(missing(bmat)){
 
-      hmat_init <- matrix(0, nrow = J, ncol = 2)
+      bmat_init <- matrix(0, nrow = J, ncol = 2)
 
       for(j in 1:J){
 
         Cj <- Cvec[j]
 
         bres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-        hmat_init[j, 1] <- bres_j$bt
-        hmat_init[j, 2] <- bres_j$bc
+        bmat_init[j, 1] <- bres_j$bt
+        bmat_init[j, 2] <- bres_j$bc
       }
     }
   }
@@ -314,7 +315,7 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
   if(missing(tau_res)){
 
     tau_res <- tau_calc(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, num_sim,
-                        delta_init, hmat_init)
+                        delta_init, bmat_init)
   }
 
   tau_sol <- tau_res$tau_sol
@@ -326,7 +327,7 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 
     Cj <- Cvec[j]
 
-    if(missing(hmat)){
+    if(missing(bmat)){
 
       bres_j <- bw_mod(del_sol, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
       ht_j <- bres_j$bt
@@ -334,8 +335,8 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 
     }else{
 
-      ht_j <- hmat[j, 1]
-      hc_j <- hmat[j, 2]
+      ht_j <- bmat[j, 1]
+      hc_j <- bmat[j, 2]
 
     }
 
@@ -361,9 +362,9 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 #' @inheritParams CI_adpt_L
 #' @param lower calculate a lower one-sided confidence interval if \code{TRUE};
 #' calculate a two-sided CI otherwise.
-#' @param hmat_init_L the matrix of modulus values corresponding to \code{delta_init}
-#' and \code{Cvec}; it can be left unspecified.
-#' @param hmat_L the matrix of modulus values corresponding to
+#' @param bmat_init_L the matrix of modulus values corresponding to
+#' \code{delta_init} and \code{Cvec}; it can be left unspecified.
+#' @param bmat_L the matrix of modulus values corresponding to
 #' the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.
 #'
 #' @return confidence interval endpoints.
@@ -385,8 +386,8 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 #' CI_adpt((1:5)/5, 1, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
 #' CI_adpt((1:5)/5, Inf, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, 0.05, lower = TRUE)
 CI_adpt <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha,
-                    lower = TRUE, num_sim = 10^5, delta_init = 1.96, hmat_init_L, hmat_L,
-                    tau_res){
+                    lower = TRUE, num_sim = 10^5, delta_init = 1.96, bmat_init_L,
+                    bmat_L, tau_res){
 
   if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
@@ -395,12 +396,12 @@ CI_adpt <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha
   if(lower == T){
 
     res_L <- CI_adpt_L(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha, num_sim,
-                     delta_init = 1.96, hmat_init_L, hmat_L, tau_res)
+                     delta_init = 1.96, bmat_init_L, bmat_L, tau_res)
     res <- c(res_L$CI, Inf)
   }else{
 
     res_L <- CI_adpt_L(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha/2, num_sim,
-                       delta_init = 1.96, hmat_init_L, hmat_L, tau_res)
+                       delta_init = 1.96, bmat_init_L, bmat_L, tau_res)
     CI_L <- res_L$CI
 
     CI_U <- -c_hat_lower_RD(stats::qnorm(1 - alpha/2), Cbar, Cbar, Xc, Xt, mon_ind,
@@ -532,11 +533,11 @@ CI_adpt_opt <- function(C_l, C_u, C, Xt, Xc, mon_ind, Yt, Yc, alpha,
                               n_grid, gain_tol, ratio, p, n_sim)
 
     Cvec <- opt_Cvec_res$Cvec
-    hmat <- opt_Cvec_res$hmat
+    bmat <- opt_Cvec_res$bmat
     tau_res <- opt_Cvec_res$tau_res
 
     res_L <- CI_adpt_L(Cvec, C, Xt, Xc, mon_ind, sigma_t.init, sigma_c.init, Yt, Yc,
-                       alpha, n_sim, delta_init, hmat = hmat, tau_res = tau_res)
+                       alpha, n_sim, delta_init, bmat = bmat, tau_res = tau_res)
 
   }else{
 

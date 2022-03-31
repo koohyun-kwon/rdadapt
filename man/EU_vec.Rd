@@ -4,7 +4,7 @@
 \alias{EU_vec}
 \title{Distance from Oracle Helper Function: Mean}
 \usage{
-EU_vec(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, tau_res, hmat)
+EU_vec(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, tau_res, bmat)
 }
 \arguments{
 \item{Cpr}{the Lipschitz coefficient where the distance is evaluated at.}
@@ -30,7 +30,7 @@ EU_vec(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, tau_res, hmat)
 \item{tau_res}{a list produced by the function \code{tau_calc};
 can be left unspecified.}
 
-\item{hmat}{a matrix of bandwidths to be used in the adaptive procedure;
+\item{bmat}{a matrix of bandwidths to be used in the adaptive procedure;
 can be left unspecified.}
 }
 \value{

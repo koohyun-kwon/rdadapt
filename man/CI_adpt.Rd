@@ -18,8 +18,8 @@ CI_adpt(
   lower = TRUE,
   num_sim = 10^5,
   delta_init = 1.96,
-  hmat_init_L,
-  hmat_L,
+  bmat_init_L,
+  bmat_L,
   tau_res
 )
 }
@@ -55,10 +55,10 @@ the default is \code{10^5}.}
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
 
-\item{hmat_init_L}{the matrix of modulus values corresponding to \code{delta_init}
-and \code{Cvec}; it can be left unspecified.}
+\item{bmat_init_L}{the matrix of modulus values corresponding to
+\code{delta_init} and \code{Cvec}; it can be left unspecified.}
 
-\item{hmat_L}{the matrix of modulus values corresponding to
+\item{bmat_L}{the matrix of modulus values corresponding to
 the optimal \eqn{\delta} and \code{Cvec}; it can be left unspecified.}
 
 \item{tau_res}{outcome value from the function \code{tau_res}; it can be

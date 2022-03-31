@@ -15,7 +15,7 @@ tau_calc(
   alpha,
   num_sim = 10^5,
   delta_init = 1.96,
-  hmat_init
+  bmat_init
 )
 }
 \arguments{
@@ -43,7 +43,7 @@ the default is \code{10^5}.}
 \item{delta_init}{the value of \eqn{\delta} to be used in simulating the quantile;
 theoretically, its value does not matter asymptotically. Its default value is 1.96.}
 
-\item{hmat_init}{the matrix of modulus values corresponding to \code{delta_init}
+\item{bmat_init}{the matrix of modulus values corresponding to \code{delta_init}
 and \code{Cvec}; it can be left unspecified.}
 }
 \value{

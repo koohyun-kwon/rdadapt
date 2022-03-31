@@ -6,7 +6,7 @@
 #' @param C the Lipschitz coefficient for the function space we consider.
 #' @param tau_res a list produced by the function \code{tau_calc};
 #' can be left unspecified.
-#' @param hmat a matrix of bandwidths to be used in the adaptive procedure;
+#' @param bmat a matrix of bandwidths to be used in the adaptive procedure;
 #' can be left unspecified.
 #' @inheritParams tau_calc
 #'
@@ -25,7 +25,7 @@
 #' sigma_c <- sigma[tind == 0]
 #' EU_vec(1/4, (1:5)/5, 2, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                   tau_res, hmat){
+                   tau_res, bmat){
 
   if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
@@ -50,7 +50,7 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     Cj <- Cvec[j]
 
-    if(missing(hmat)){
+    if(missing(bmat)){
 
       bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
       ht_j <- bres_j$bt
@@ -58,8 +58,8 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     }else{
 
-      ht_j <- hmat[j, 1]
-      hc_j <- hmat[j, 2]
+      ht_j <- bmat[j, 1]
+      hc_j <- bmat[j, 2]
     }
 
     EU_vec[j] <- -c_hat_lower_RD(del_sol, Cj, C, Xt, Xc, mon_ind,
@@ -91,7 +91,7 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' sigma_c <- sigma[tind == 0]
 #' CovU_mat(1/4, (1:5)/5, 2, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                     tau_res, hmat){
+                     tau_res, bmat){
 
   if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
@@ -115,7 +115,7 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     Cj <- Cvec[j]
 
-    if(missing(hmat)){
+    if(missing(bmat)){
 
       bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
       ht_j <- bres_j$bt
@@ -123,8 +123,8 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     }else{
 
-      ht_j <- hmat[j, 1]
-      hc_j <- hmat[j, 2]
+      ht_j <- bmat[j, 1]
+      hc_j <- bmat[j, 2]
     }
 
     num_tj <- K_fun(b = ht_j, C_pair = c(C, Cj), Xt, mon_ind) / sigma_t
@@ -164,7 +164,7 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' sigma_c <- sigma[tind == 0]
 #' l_adpt(1/4, (1:5)/5, 2, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                   n_sim = 10^5, tau_res, hmat){
+                   n_sim = 10^5, tau_res, bmat){
 
   if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
@@ -176,25 +176,25 @@ l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     tau_res <- tau_calc(Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
   }
 
-  if(missing(hmat)){
+  if(missing(bmat)){
 
     del_sol <- tau_res$del_sol
 
-    hmat <- matrix(0, nrow = J, ncol = 2)
+    bmat <- matrix(0, nrow = J, ncol = 2)
     for(j in 1:J){
 
       Cj <- Cvec[j]
 
       bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- bres_j$bt
-      hmat[j, 2] <- bres_j$bc
+      bmat[j, 1] <- bres_j$bt
+      bmat[j, 2] <- bres_j$bc
     }
   }
 
   EUs <- EU_vec(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                tau_res, hmat)
+                tau_res, bmat)
   CovU <- CovU_mat(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
-                   tau_res, hmat)
+                   tau_res, bmat)
 
   simvec <- mvtnorm::rmvnorm(n_sim, EUs, CovU)
   minvec <- pmin_mat(simvec)
@@ -287,7 +287,7 @@ dist_l <- function(l_adpt_vec, l_orc_vec, ratio = TRUE, p = Inf){
 #' @inheritParams dist_l
 #'
 #' @return a list with components \code{Cvec}, the optimal sequence of Lipschitz coefficients,
-#' \code{hmat}, the matrix of corresponding bandwidths,
+#' \code{bmat}, the matrix of corresponding bandwidths,
 #' \code{tau_res}, the corresponding calibrated values of \eqn{\tau} and \eqn{\delta}, and
 #' \code{dist_opt}, the optimal distance to the orale.
 #' @export
@@ -335,14 +335,14 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     tau_res <- tau_calc(Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
     del_sol <- tau_res$del_sol
 
-    hmat <- matrix(0, nrow = J, ncol = 2)
+    bmat <- matrix(0, nrow = J, ncol = 2)
     for(j in 1:J){
 
       Cj <- Cvec[j]
 
       bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- bres_j$bt
-      hmat[j, 2] <- bres_j$bc
+      bmat[j, 1] <- bres_j$bt
+      bmat[j, 2] <- bres_j$bc
     }
 
     # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -350,7 +350,7 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     for(i in 1:n_grid){
 
       l_adpt_vec[i] <- l_adpt(Cpr_grid[i], Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
-                              alpha, n_sim, tau_res, hmat)
+                              alpha, n_sim, tau_res, bmat)
     }
 
     dist_new <- dist_l(l_adpt_vec, l_orc_vec, ratio, p)
@@ -358,7 +358,7 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     dist <- dist_new
   }
 
-  res <- list(Cvec_opt = Cvec, hmat = hmat, tau_res = tau_res,
+  res <- list(Cvec_opt = Cvec, bmat = bmat, tau_res = tau_res,
               dist_opt = dist)
 
   return(res)
@@ -408,14 +408,14 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
   tau_res <- tau_calc(Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
   del_sol <- tau_res$del_sol
 
-  hmat <- matrix(0, nrow = J, ncol = 2)
+  bmat <- matrix(0, nrow = J, ncol = 2)
   for(j in 1:J){
 
     Cj <- Cvec[j]
 
     bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    hmat[j, 1] <- bres_j$bt
-    hmat[j, 2] <- bres_j$bc
+    bmat[j, 1] <- bres_j$bt
+    bmat[j, 2] <- bres_j$bc
   }
 
   # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -423,7 +423,7 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
   for(i in 1:n_grid){
 
     l_adpt_vec[i] <- l_adpt(Cpr_grid[i], Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
-                            alpha, n_sim, tau_res, hmat)
+                            alpha, n_sim, tau_res, bmat)
   }
 
   dist <- dist_l(l_adpt_vec, l_orc_vec, ratio, p)
@@ -444,7 +444,7 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
 #' @inheritParams dist_l
 #'
 #' @return a list with components \code{Cvec}, the optimal sequence of Lipschitz coefficients,
-#' \code{hmat}, the matrix of corresponding bandwidths,
+#' \code{bmat}, the matrix of corresponding bandwidths,
 #' \code{tau_res}, the corresponding calibrated values of \eqn{\tau} and \eqn{\delta}, and
 #' \code{dist_opt}, the optimal distance to the orale.
 #' @export
@@ -482,21 +482,21 @@ Opt_C_seq2 <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     tau_res <- tau_calc(Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
     del_sol <- tau_res$del_sol
 
-    hmat <- matrix(0, nrow = J, ncol = 2)
+    bmat <- matrix(0, nrow = J, ncol = 2)
     for(j in 1:J){
 
       Cj <- Cvec[j]
 
       bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- bres_j$bt
-      hmat[j, 2] <- bres_j$bc
+      bmat[j, 1] <- bres_j$bt
+      bmat[j, 2] <- bres_j$bc
     }
 
     # Calculates the worst-case distance
     dist_fun <- function(Cpr){
 
       l_adpt(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
-             alpha, n_sim, tau_res, hmat) /
+             alpha, n_sim, tau_res, bmat) /
         l_orc(Cpr, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
     }
 
@@ -507,7 +507,7 @@ Opt_C_seq2 <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     dist <- dist_new
   }
 
-  res <- list(Cvec_opt = Cvec, hmat = hmat, tau_res = tau_res,
+  res <- list(Cvec_opt = Cvec, bmat = bmat, tau_res = tau_res,
               dist_opt = dist)
 
   return(res)

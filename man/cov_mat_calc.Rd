@@ -4,12 +4,11 @@
 \alias{cov_mat_calc}
 \title{Covariance Matrix Calculation for Multiple Estimators}
 \usage{
-cov_mat_calc(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, hmat)
+cov_mat_calc(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, bmat)
 }
 \arguments{
 \item{delta}{a nonegative scalar value;
-it can be left unspecified if
-\code{hmat} is specified.}
+it can be left unspecified if \code{bmat} is specified.}
 
 \item{Cvec}{a sequence of smoothness parameters}
 
@@ -27,7 +26,7 @@ it can be left unspecified if
 \item{sigma_c}{standard deviation of the error term for the control units
 (either length 1 or \eqn{n_c}).}
 
-\item{hmat}{a \eqn{J} by {2} matrix of modulus values;
+\item{bmat}{a \eqn{J} by {2} matrix of modulus values;
 it can be left unspecified if \code{delta} is specified.}
 }
 \value{

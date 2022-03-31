@@ -57,7 +57,7 @@ the default is \code{n_sim = 10^5}.}
 }
 \value{
 a list with components \code{Cvec}, the optimal sequence of Lipschitz coefficients,
-\code{hmat}, the matrix of corresponding bandwidths,
+\code{bmat}, the matrix of corresponding bandwidths,
 \code{tau_res}, the corresponding calibrated values of \eqn{\tau} and \eqn{\delta}, and
 \code{dist_opt}, the optimal distance to the orale.
 }

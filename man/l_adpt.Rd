@@ -16,7 +16,7 @@ l_adpt(
   alpha,
   n_sim = 10^5,
   tau_res,
-  hmat
+  bmat
 )
 }
 \arguments{
@@ -47,7 +47,7 @@ the default is \code{n_sim = 10^5}.}
 \item{tau_res}{a list produced by the function \code{tau_calc};
 can be left unspecified.}
 
-\item{hmat}{a matrix of bandwidths to be used in the adaptive procedure;
+\item{bmat}{a matrix of bandwidths to be used in the adaptive procedure;
 can be left unspecified.}
 }
 \description{
