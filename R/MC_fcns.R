@@ -58,9 +58,9 @@ MC_sim_lower <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt_mat,
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$bt
-      hmat[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat[j, 1] <- bres_j$bt
+      hmat[j, 2] <- bres_j$bc
     }
   }
 

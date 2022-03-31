@@ -51,13 +51,13 @@ cov_calc <- function(delta, Cj, Ck, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht_j) | missing(hc_j) | missing(ht_k) | missing(hc_k)){
 
-    hres_j <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht_j <- hres_j$bt
-    hc_j <- hres_j$bc
+    bres_j <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht_j <- bres_j$bt
+    hc_j <- bres_j$bc
 
-    hres_k <- bw_mod(delta, Ck, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht_k <- hres_k$bt
-    hc_k <- hres_k$bc
+    bres_k <- bw_mod(delta, Ck, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht_k <- bres_k$bt
+    hc_k <- bres_k$bc
   }
 
   num_tj <- K_fun(b = ht_j, C_pair = c(Cbar, Cj), X = Xt, mon_ind = mon_ind)
@@ -118,9 +118,9 @@ cov_mat_calc <- function(delta, Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, h
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$bt
-      hmat[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat[j, 1] <- bres_j$bt
+      hmat[j, 2] <- bres_j$bc
     }
   }
 
@@ -243,9 +243,9 @@ tau_calc <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat_init[j, 1] <- hres_j$bt
-      hmat_init[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat_init[j, 1] <- bres_j$bt
+      hmat_init[j, 2] <- bres_j$bc
     }
   }
 
@@ -304,9 +304,9 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 
         Cj <- Cvec[j]
 
-        hres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-        hmat_init[j, 1] <- hres_j$bt
-        hmat_init[j, 2] <- hres_j$bc
+        bres_j <- bw_mod(delta_init, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+        hmat_init[j, 1] <- bres_j$bt
+        hmat_init[j, 2] <- bres_j$bc
       }
     }
   }
@@ -328,9 +328,9 @@ CI_adpt_L <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alp
 
     if(missing(hmat)){
 
-      hres_j <- bw_mod(del_sol, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      ht_j <- hres_j$bt
-      hc_j <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      ht_j <- bres_j$bt
+      hc_j <- bres_j$bc
 
     }else{
 

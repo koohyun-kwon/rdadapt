@@ -87,9 +87,9 @@ Lhat_fun_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht <- hres$bt
-    hc <- hres$bc
+    bres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht <- bres$bt
+    hc <- bres$bc
   }
 
   num_it <- K_fun(b = ht, C_pair = c(Cbar, Cj), Xt, mon_ind) * Yt / sigma_t^2
@@ -155,9 +155,9 @@ a_fun <- function(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, ht, hc){
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht <- hres$bt
-    hc <- hres$bc
+    bres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht <- bres$bt
+    hc <- bres$bc
   }
 
   num_it1 <- K_fun(b = ht, C_pair = c(Cbar, Cj), X = Xt, mon_ind = mon_ind) / sigma_t^2
@@ -206,9 +206,9 @@ sd_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht <- hres$bt
-    hc <- hres$bc
+    bres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht <- bres$bt
+    hc <- bres$bc
   }
 
   res <- (delta / ht) /
@@ -246,9 +246,9 @@ sup_bias_Lhat_RD <- function(delta, Cj, Cbar, Xt, Xc, mon_ind,
 
   if(missing(ht) | missing(hc)){
 
-    hres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    ht <- hres$bt
-    hc <- hres$bc
+    bres <- bw_mod(delta, Cj, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    ht <- bres$bt
+    hc <- bres$bc
   }
 
   res1 <- 0.5 * (ht + hc)

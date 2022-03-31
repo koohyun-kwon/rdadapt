@@ -52,9 +52,9 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     if(missing(hmat)){
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      ht_j <- hres_j$bt
-      hc_j <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      ht_j <- bres_j$bt
+      hc_j <- bres_j$bc
 
     }else{
 
@@ -117,9 +117,9 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
     if(missing(hmat)){
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      ht_j <- hres_j$bt
-      hc_j <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      ht_j <- bres_j$bt
+      hc_j <- bres_j$bc
 
     }else{
 
@@ -185,9 +185,9 @@ l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$bt
-      hmat[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat[j, 1] <- bres_j$bt
+      hmat[j, 2] <- bres_j$bc
     }
   }
 
@@ -340,9 +340,9 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$bt
-      hmat[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat[j, 1] <- bres_j$bt
+      hmat[j, 2] <- bres_j$bc
     }
 
     # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -413,9 +413,9 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
 
     Cj <- Cvec[j]
 
-    hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    hmat[j, 1] <- hres_j$bt
-    hmat[j, 2] <- hres_j$bc
+    bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+    hmat[j, 1] <- bres_j$bt
+    hmat[j, 2] <- bres_j$bc
   }
 
   # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -487,9 +487,9 @@ Opt_C_seq2 <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 
       Cj <- Cvec[j]
 
-      hres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$bt
-      hmat[j, 2] <- hres_j$bc
+      bres_j <- bw_mod(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
+      hmat[j, 1] <- bres_j$bt
+      hmat[j, 2] <- bres_j$bc
     }
 
     # Calculates the worst-case distance
