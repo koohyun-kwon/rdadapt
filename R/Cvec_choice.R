@@ -27,7 +27,7 @@
 EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                    tau_res, hmat){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -93,7 +93,7 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                      tau_res, hmat){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -166,7 +166,7 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                    n_sim = 10^5, tau_res, hmat){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -225,7 +225,7 @@ l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 #' l_orc(1/4, 2, Xt, Xc, mon_ind, sigma_t, sigma_c, 0.05)
 l_orc <- function(Cpr, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -306,7 +306,7 @@ dist_l <- function(l_adpt_vec, l_orc_vec, ratio = TRUE, p = Inf){
 Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                       n_grid = 10, gain_tol = 0.05, ratio = TRUE, p = Inf, n_sim = 10^5){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -388,7 +388,7 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
 dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
                    n_grid = 10, ratio = TRUE, p = Inf, n_sim = 10^5){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
@@ -463,7 +463,7 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
 Opt_C_seq2 <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
                       gain_tol = 0.05, ratio = TRUE, p = Inf, n_sim = 10^5){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 

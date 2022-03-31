@@ -388,7 +388,7 @@ CI_adpt <- function(Cvec, Cbar, Xt, Xc, mon_ind, sigma_t, sigma_c, Yt, Yc, alpha
                     lower = TRUE, num_sim = 10^5, delta_init = 1.96, hmat_init_L, hmat_L,
                     tau_res){
 
-  if(class(Xt) != "matrix" | class(Xc) != "matrix"){
+  if(!is.matrix(Xt) | !is.matrix(Xc)){
     stop("Xt and Xc should be matrices")
   }
 
