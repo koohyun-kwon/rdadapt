@@ -41,5 +41,5 @@ sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
 Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
 Yc = rnorm(length(sigma_c), mean = 0, sd = sigma_c)
-sigmaSvm(Xt, Xc, Yt, Yc)
+sigmaSvm(Xt, Xc, Yt, Yc, "left")
 }
