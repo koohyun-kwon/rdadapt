@@ -6,7 +6,7 @@
 #' @param C the Lipschitz coefficient for the function space we consider.
 #' @param tau_res a list produced by the function \code{tau_calc};
 #' can be left unspecified.
-#' @param bmat a matrix of bandwidths to be used in the adaptive procedure;
+#' @param bmat a matrix of modulus values to be used in the adaptive procedure;
 #' can be left unspecified.
 #' @inheritParams tau_calc
 #'
@@ -287,7 +287,7 @@ dist_l <- function(l_adpt_vec, l_orc_vec, ratio = TRUE, p = Inf){
 #' @inheritParams dist_l
 #'
 #' @return a list with components \code{Cvec}, the optimal sequence of Lipschitz coefficients,
-#' \code{bmat}, the matrix of corresponding bandwidths,
+#' \code{bmat}, the matrix of corresponding modulus values,
 #' \code{tau_res}, the corresponding calibrated values of \eqn{\tau} and \eqn{\delta}, and
 #' \code{dist_opt}, the optimal distance to the orale.
 #' @export
@@ -444,7 +444,7 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
 #' @inheritParams dist_l
 #'
 #' @return a list with components \code{Cvec}, the optimal sequence of Lipschitz coefficients,
-#' \code{bmat}, the matrix of corresponding bandwidths,
+#' \code{bmat}, the matrix of corresponding modulus values,
 #' \code{tau_res}, the corresponding calibrated values of \eqn{\tau} and \eqn{\delta}, and
 #' \code{dist_opt}, the optimal distance to the orale.
 #' @export

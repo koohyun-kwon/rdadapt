@@ -30,7 +30,7 @@ CovU_mat(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, tau_res, bmat)
 \item{tau_res}{a list produced by the function \code{tau_calc};
 can be left unspecified.}
 
-\item{bmat}{a matrix of bandwidths to be used in the adaptive procedure;
+\item{bmat}{a matrix of modulus values to be used in the adaptive procedure;
 can be left unspecified.}
 }
 \value{
