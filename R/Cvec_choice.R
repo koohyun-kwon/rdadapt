@@ -53,8 +53,8 @@ EU_vec <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     if(missing(hmat)){
 
       hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      ht_j <- hres_j$ht
-      hc_j <- hres_j$hc
+      ht_j <- hres_j$bt
+      hc_j <- hres_j$bc
 
     }else{
 
@@ -118,8 +118,8 @@ CovU_mat <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
     if(missing(hmat)){
 
       hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      ht_j <- hres_j$ht
-      hc_j <- hres_j$hc
+      ht_j <- hres_j$bt
+      hc_j <- hres_j$bc
 
     }else{
 
@@ -186,8 +186,8 @@ l_adpt <- function(Cpr, Cvec, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
       Cj <- Cvec[j]
 
       hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$ht
-      hmat[j, 2] <- hres_j$hc
+      hmat[j, 1] <- hres_j$bt
+      hmat[j, 2] <- hres_j$bc
     }
   }
 
@@ -341,8 +341,8 @@ Opt_C_seq <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
       Cj <- Cvec[j]
 
       hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$ht
-      hmat[j, 2] <- hres_j$hc
+      hmat[j, 1] <- hres_j$bt
+      hmat[j, 2] <- hres_j$bc
     }
 
     # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -414,8 +414,8 @@ dist.J <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha, J,
     Cj <- Cvec[j]
 
     hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-    hmat[j, 1] <- hres_j$ht
-    hmat[j, 2] <- hres_j$hc
+    hmat[j, 1] <- hres_j$bt
+    hmat[j, 2] <- hres_j$bc
   }
 
   # Calculates worst-case length of the adaptive procedure over Cpr_grid
@@ -488,8 +488,8 @@ Opt_C_seq2 <- function(C_l, C_u, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha,
       Cj <- Cvec[j]
 
       hres_j <- bw_adpt(del_sol, Cj, C, Xt, Xc, mon_ind, sigma_t, sigma_c)
-      hmat[j, 1] <- hres_j$ht
-      hmat[j, 2] <- hres_j$hc
+      hmat[j, 1] <- hres_j$bt
+      hmat[j, 2] <- hres_j$bc
     }
 
     # Calculates the worst-case distance
