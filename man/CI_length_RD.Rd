@@ -2,7 +2,7 @@
 % Please edit documentation in R/CI_mm.R
 \name{CI_length_RD}
 \alias{CI_length_RD}
-\title{Minimum CI Half-length Function}
+\title{Minimum Half-length Function}
 \usage{
 CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 }
@@ -26,27 +26,25 @@ CI_length_RD(b, C, Xt, Xc, mon_ind, sigma_t, sigma_c, alpha)
 \item{alpha}{the desired level of non-coverage probability.}
 }
 \value{
-the length of CI corresponding to the modulus value \code{b}
+the minimum half-length corresponding to the modulus value \code{b}
 }
 \description{
-Calculates the minimum CI half-length, as a function of the modulus value.
+Calculates the minimum half-length, as a function of the modulus value.
 }
 \details{
-In the paper, the minimum CI half-length is expressed as a function of \eqn{\delta};
+In the paper, the minimum half-length is expressed as a function of
+\eqn{\delta};
 here, we use the relationship that \eqn{\delta} is the inverse modulus value
 given \eqn{b}.
+The returned value will be minimized with respect to \eqn{b} later
 }
 \examples{
-n <- 500
-d <- 2
-X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+X <- matrix(rnorm(500 * 2), nrow = 500, ncol = 2)
 tind <- X[, 1] > 0 & X[, 2] > 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
-C <- 1/2
-mon_ind <- c(1, 2)
-sigma <- rnorm(n)^2 + 1
+sigma <- rnorm(500)^2 + 1
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
-CI_length_RD(1, C, Xt, Xc, mon_ind, sigma_t , sigma_c, 0.05)
+CI_length_RD(1.1, 1/2, Xt, Xc, c(1, 2), sigma_t , sigma_c, 0.05)
 }

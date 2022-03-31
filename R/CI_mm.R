@@ -17,35 +17,31 @@ cv_a <- function(t, alpha){
   return(res)
 }
 
-#' Minimum CI Half-length Function
+#' Minimum Half-length Function
 #'
-#' Calculates the minimum CI half-length, as a function of the modulus value.
+#' Calculates the minimum half-length, as a function of the modulus value.
 #'
-#' In the paper, the minimum CI half-length is expressed as a function of
+#' In the paper, the minimum half-length is expressed as a function of
 #' \eqn{\delta};
 #' here, we use the relationship that \eqn{\delta} is the inverse modulus value
 #' given \eqn{b}.
-#' The returned value of th will be minimized with respect to \eqn{b} later
+#' The returned value will be minimized with respect to \eqn{b} later
 #'
 #' @inheritParams invmod_RD
 #' @param C a scalar smoothness parameter.
 #' @param alpha the desired level of non-coverage probability.
 #'
-#' @return the length of CI corresponding to the modulus value \code{b}
+#' @return the minimum half-length corresponding to the modulus value \code{b}
 #' @export
 #'
-#' @examples n <- 500
-#' d <- 2
-#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' @examples X <- matrix(rnorm(500 * 2), nrow = 500, ncol = 2)
 #' tind <- X[, 1] > 0 & X[, 2] > 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
-#' C <- 1/2
-#' mon_ind <- c(1, 2)
-#' sigma <- rnorm(n)^2 + 1
+#' sigma <- rnorm(500)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
-#' CI_length_RD(1, C, Xt, Xc, mon_ind, sigma_t , sigma_c, 0.05)
+#' CI_length_RD(1.1, 1/2, Xt, Xc, c(1, 2), sigma_t , sigma_c, 0.05)
 CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 
   # Calculate delta corresponding to b
@@ -59,9 +55,12 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
   bc <- om_inv$bc
   bt <- om_inv$bt
 
-  # Why? Think about it
+  # Deal with the case where delta = 0; this can happen when b is very small
+  # Basically, this is the case where bandwidth is too small (no effective obs)
+  # We prevent this case by letting the function return Inf
   if ((om_inv_t + om_inv_c) == 0) return(Inf)
 
+  # Remaining codes are for the case with delta > 0
   sup_bias <- sup_bias_Lhat_RD(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
                                bt, bc)
   sup_bias <- sup_bias - a_fun(delta, C, C, Xt, Xc, mon_ind, sigma_t, sigma_c,
