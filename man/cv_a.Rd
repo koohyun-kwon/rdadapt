@@ -7,7 +7,7 @@
 cv_a(t, alpha)
 }
 \arguments{
-\item{t}{the non-centrality parameter.}
+\item{t}{non-centrality parameter.}
 
 \item{alpha}{probability}
 }

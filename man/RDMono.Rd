@@ -76,7 +76,7 @@ a list of following components
 Description to be supplied.
 }
 \details{
-Under deveopment.
+Under development.
 }
 \examples{
 print("under development")
