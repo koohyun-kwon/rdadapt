@@ -15,28 +15,26 @@ sigmaSvm(Xt, Xc, Yt, Yc, t.dir = c("left", "right"))
 
 \item{Yc}{outcome value for the control group observations.}
 
-\item{t.dir}{treatment direction; \code{t.dir = "left"} if \eqn{x < 0} is treated.
-Otherwise, \code{t.dir = "right"}.}
+\item{t.dir}{treatment direction; \code{t.dir = "left"} if
+\eqn{x < 0} is treated. Otherwise, \code{t.dir = "right"}.}
 }
 \value{
 a list containing conditional standard deviation estimates for treated
 observations (\code{sigma.t}) and control observations (\code{sigma.c})
 }
 \description{
-Standard deviation is calculated using Silverman's Rule,
-as in RDHonest::NPRPrelimVar.fit
+Standard deviation is calculated using the first-stage bandwidth chosen by
+Silverman's Rule, as in RDHonest::NPRPrelimVar.fit.
 }
 \details{
-This works only for one-dimensional cases.
+This works only for cases with one-dimensional running variables.
 }
 \examples{
-n <- 500
-d <- 1
-X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+X <- matrix(rnorm(500 * 1), nrow = 500, ncol = 1)
 tind <- X[, 1] < 0
 Xt <- X[tind == 1, ,drop = FALSE]
 Xc <- X[tind == 0, ,drop = FALSE]
-sigma <- rep(1, n)
+sigma <- rep(1, 500)
 sigma_t <- sigma[tind == 1]
 sigma_c <- sigma[tind == 0]
 Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)

@@ -140,26 +140,24 @@ sigmaNN <- function(Xt, Xc, Yt, Yc, t.dir = c("left", "right"), N = 3){
 
 #' Standard Deviation Calculation by Silverman's Rule
 #'
-#' Standard deviation is calculated using Silverman's Rule,
-#' as in RDHonest::NPRPrelimVar.fit
+#' Standard deviation is calculated using the first-stage bandwidth chosen by
+#' Silverman's Rule, as in RDHonest::NPRPrelimVar.fit.
 #'
-#' This works only for one-dimensional cases.
+#' This works only for cases with one-dimensional running variables.
 #'
 #' @inheritParams CI_adpt
-#' @param t.dir treatment direction; \code{t.dir = "left"} if \eqn{x < 0} is treated.
-#' Otherwise, \code{t.dir = "right"}.
+#' @param t.dir treatment direction; \code{t.dir = "left"} if
+#' \eqn{x < 0} is treated. Otherwise, \code{t.dir = "right"}.
 #'
 #' @return a list containing conditional standard deviation estimates for treated
 #' observations (\code{sigma.t}) and control observations (\code{sigma.c})
 #' @export
 #'
-#' @examples n <- 500
-#' d <- 1
-#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' @examples X <- matrix(rnorm(500 * 1), nrow = 500, ncol = 1)
 #' tind <- X[, 1] < 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
-#' sigma <- rep(1, n)
+#' sigma <- rep(1, 500)
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' Yt = 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
@@ -172,15 +170,16 @@ sigmaSvm <- function(Xt, Xc, Yt, Yc, t.dir = c("left", "right")){
   X <- c(Xt, Xc)
   Y <- c(Yt, Yc)
 
-  Xmin <- max(sort(abs(unique(Xt)))[2], sort(abs(unique(Xc)))[2])
+  # Minimum value of meaningful bandwidth
+  hmin <- max(sort(abs(unique(Xt)))[2], sort(abs(unique(Xc)))[2])
 
-  h1 <- max(1.84 * stats::sd(X)/sum(length(X))^(1/5), Xmin)
+  h1 <- max(1.84 * stats::sd(X)/sum(length(X))^(1/5), hmin)
 
+  # First-stage nonparametric regression
+  # order = 0, since we don't assume bounded 2nd derivative
   drf <- data.frame(y = Y, x = X)
   d <- RDHonest::RDData(drf, 0)
-
-  r1 <- RDHonest::NPRreg.fit(d = d, h = h1, kern = "uniform",
-                             order = 0, se.method = "EHW")
+  r1 <- RDHonest::NPRreg.fit(d = d, h = h1, order = 0, se.method = "EHW")
 
   r1$sigma2p <- r1$sigma2p * length(r1$sigma2p)/(length(r1$sigma2p) - 1)
   r1$sigma2m <- r1$sigma2m * length(r1$sigma2m)/(length(r1$sigma2m) - 1)
@@ -190,13 +189,11 @@ sigmaSvm <- function(Xt, Xc, Yt, Yc, t.dir = c("left", "right")){
     # Flip p and m since RDHonest assumes x > 0 is treated
     sigma.c <- rep(mean(r1$sigma2p), length(d$Xp))
     sigma.t <- rep(mean(r1$sigma2m), length(d$Xm))
-
   }else{
 
     sigma.t <- rep(mean(r1$sigma2p), length(d$Xp))
     sigma.c <- rep(mean(r1$sigma2m), length(d$Xm))
   }
-
 
   return(list(sigma.t = sqrt(sigma.t), sigma.c = sqrt(sigma.c)))
 }
