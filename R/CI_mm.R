@@ -81,29 +81,33 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 #'
 #' @inheritParams c_hat_lower_RD
 #' @param se.method the standard deviation estimation method.
-#' @param se.init the standard deviation estimation method for choosing an optimal estimator.
+#' @param se.init the standard deviation estimation method for choosing
+#' an optimal estimator.
 #' @param sigma_t supplied variance for treated observations.
 #' @param sigma_c supplied variance for control observations.
 #' @param sigma_t.init supplied first-stage variance for treated observations.
 #' @param sigma_c.init supplied first-stage variance for control observations.
 #' @param C_max the worst-case smoothness parameter.
-#' @param t.dir treatment direction; \code{t.dir = "left"} if \eqn{x < 0} is treated.
-#' Otherwise, \code{t.dir = "right"}. This should specified only for one-dimensional cases.
+#' @param t.dir treatment direction; \code{t.dir = "left"}
+#' if \eqn{x < 0} is treated. Otherwise, \code{t.dir = "right"}.
+#' This should specified only for one-dimensional cases.
 #' @param alpha the desired level of non-coverage
 #' @param N the number of neighbors to be used when \code{se.method = "nn"};
 #' the default is \code{N = 3}.
-#' @param opt_b provided if the optimal modulus value is known; default is \code{NULL}.
+#' @param opt_b provided if the optimal modulus value is known; '
+#' default is \code{NULL}.
 #' @param min_half_length provided if the optimal half-length is known;
 #' default is \code{NULL}.
 #' @param maxb.const governs the optimization range; default is 10.
-#' @param Prov.Plot if \code{TRUE}, provides a plot that can be used to check the optimization
-#' worked well; default is \code{FALSE}.
+#' @param Prov.Plot if \code{TRUE}, provides a plot that can be used to check
+#' the optimization worked well; default is \code{FALSE}.
 #' @param len.return if \code{TRUE}, returns only the optimal half-length;
 #' default is \code{FALSE}.
 #'
-#' @return returns a list with the confidence interval (\code{ci}), the standard deviation
-#' of the estimator (\code{sd}), and the bandwidths used for the treated observations and
-#' the control observations (\code{h.t} and \code{h.c})
+#' @return returns a list with the confidence interval (\code{ci}),
+#' the standard deviation #' of the estimator (\code{sd}),
+#' and the bandwidths used for the treated observations and the control
+#' observations (\code{h.t} and \code{h.c})
 #'
 #' @export
 #'
@@ -208,24 +212,32 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
     }
   }
 
+  # opt_b and min_half_length depend only on Xt and Xc
+  # So in simulations, we may provide these values a priori to speed up the
+  # computation. In real implementation, these values should be calculated
+  # from data.
   if(is.null(opt_b) | is.null(min_half_length)){
 
-    # Minimum modulus calculation for determining the optimization range
+    # Minimum modulus calculation to determine the optimization range
     minbt <- minb_fun(rep(C_max, 2), Xt, mon_ind)
     minbc <- minb_fun(rep(C_max, 2), Xc, mon_ind, swap = T)
     minb <- minbt + minbc
 
     # Determining the upper end of the optimization range by heuristics
+    # Default multiplying constant is given by maxb.const = 10
     modres_U <- modsol_RD(stats::qnorm(1 - alpha/2), rep(C_max,2), Xt, Xc,
                           mon_ind, sigma_t.init, sigma_c.init)
-    maxb <- maxb.const * (modres_U$bt + modres_U$bc)
+    maxb <- maxb.const * (modres_U$bt + modres_U$bc) # multiply some big constant
 
+    # Optimizing over the value of b in terms of CI length
     CI_length_sol <- stats::optimize(CI_length_RD, interval = c(minb, maxb),
                                      C = C_max, Xt = Xt, Xc = Xc, mon_ind = mon_ind,
                                      sigma_t = sigma_t.init, sigma_c = sigma_c.init,
                                      alpha = alpha)
-    min_half_length.init <- CI_length_sol$objective
     opt_b <- CI_length_sol$minimum
+
+    # Final half-length would be given after 2nd stage variance estimation
+    min_half_length.init <- CI_length_sol$objective
 
     # This provides a way to check if the optimization was done correctly
     if(Prov.Plot == TRUE){
@@ -235,7 +247,8 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
       yvec = numeric(numgrid)
       for(i in 1:numgrid){
 
-        yvec[i] = CI_length_RD(xintv[i], C = C_max, Xt = Xt, Xc = Xc, mon_ind = mon_ind,
+        yvec[i] = CI_length_RD(xintv[i], C = C_max, Xt = Xt, Xc = Xc,
+                               mon_ind = mon_ind,
                                sigma_t = sigma_t.init, sigma_c = sigma_c.init,
                                alpha = alpha)
       }
@@ -245,9 +258,11 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
     }
   }
 
+  # returns the half-length value without the second-stage sd estimation
+  # used for simulation purpose
   if(len.return == TRUE){
 
-    return(min_half_length.init) # returns the value without the second-stage sd estimation
+    return(min_half_length.init)
 
   }else{
 
@@ -265,6 +280,7 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
 
     }else if(se.method == "nn.test"){
 
+      # Reliability not confirmed
       sigma.res <- sigmaNN2(Xt, Xc, Yt, Yc, N)
       sigma_t.new <- sigma.res$sigma.t
       sigma_c.new <- sigma.res$sigma.c
@@ -275,33 +291,35 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
       sigma_c.new <- sigma_c
     }
 
-    # Retrieving the optimal value of delta; the first stage sd values are used
+    # Retrieving the value of delta corresponding to opt_b;
+    # This is because estimators are defined w.r.t. delta
     invmod_opt <- invmod_RD(opt_b, rep(C_max, 2), Xt, Xc, mon_ind,
                             sigma_t.init, sigma_c.init)
-    ht <- invmod_opt$bt
-    hc <- invmod_opt$bc
     del_t <- invmod_opt$delta_t
     del_c <- invmod_opt$delta_c
     delta <- sqrt(del_t^2 + del_c^2)
 
-    # Calculates the form of the optimal estimator; the first stage sd values are used
+    # Retrieving the values of b_t and b_c corresponding to opt_b
+    # Providing the values speed up the calculation of estimator
+    bt <- invmod_opt$bt
+    bc <- invmod_opt$bc
+
+    # Calculates the form of the optimal estimator using delta, bt, bc;
+    # the first stage sd values are used
     optL.res <- Lhat_fun_RD(delta, C_max, C_max, Xt, Xc, mon_ind,
-                            sigma_t.init, sigma_c.init, Yt, Yc, ht, hc,
+                            sigma_t.init, sigma_c.init, Yt, Yc, bt, bc,
                             ret.w = TRUE)
-    opt_Lhat <- optL.res$est -
-      a_fun(delta, C_max, C_max, Xt, Xc, mon_ind, sigma_t.init, sigma_c.init,
-            ht, hc)
+    opt_Lhat <- optL.res$est - a_fun(delta, C_max, C_max, Xt, Xc, mon_ind,
+                                     sigma_t.init, sigma_c.init, bt, bc)
 
     # Re-calculates the half-length using the second stage sd estimation
     sd <- sd_w(optL.res$w_t, optL.res$w_c, sigma_t.new, sigma_c.new)
-
     min_half_length <- sd * min_half_length.init /
-      sd_Lhat_RD(delta, C_max, C_max, Xt, Xc, mon_ind, sigma_t.init,
-                 sigma_c.init, ht, hc)
+      sd_Lhat_RD(delta, C_max, C_max, Xt, Xc, mon_ind,
+                 sigma_t.init, sigma_c.init, bt, bc)
 
-    # Returns a list
     res <- list(ci = c(opt_Lhat - min_half_length, opt_Lhat + min_half_length),
-                sd = sd, h.t = ht/C_max, h.c = hc/C_max)
+                sd = sd, h.t = bt/C_max, h.c = bc/C_max)
 
     return(res)
   }

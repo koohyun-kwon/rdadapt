@@ -42,10 +42,12 @@ CI_minimax_RD(
 
 \item{se.method}{the standard deviation estimation method.}
 
-\item{se.init}{the standard deviation estimation method for choosing an optimal estimator.}
+\item{se.init}{the standard deviation estimation method for choosing
+an optimal estimator.}
 
-\item{t.dir}{treatment direction; \code{t.dir = "left"} if \eqn{x < 0} is treated.
-Otherwise, \code{t.dir = "right"}. This should specified only for one-dimensional cases.}
+\item{t.dir}{treatment direction; \code{t.dir = "left"}
+if \eqn{x < 0} is treated. Otherwise, \code{t.dir = "right"}.
+This should specified only for one-dimensional cases.}
 
 \item{alpha}{the desired level of non-coverage}
 
@@ -60,23 +62,25 @@ the default is \code{N = 3}.}
 
 \item{sigma_c.init}{supplied first-stage variance for control observations.}
 
-\item{opt_b}{provided if the optimal modulus value is known; default is \code{NULL}.}
+\item{opt_b}{provided if the optimal modulus value is known; '
+default is \code{NULL}.}
 
 \item{min_half_length}{provided if the optimal half-length is known;
 default is \code{NULL}.}
 
 \item{maxb.const}{governs the optimization range; default is 10.}
 
-\item{Prov.Plot}{if \code{TRUE}, provides a plot that can be used to check the optimization
-worked well; default is \code{FALSE}.}
+\item{Prov.Plot}{if \code{TRUE}, provides a plot that can be used to check
+the optimization worked well; default is \code{FALSE}.}
 
 \item{len.return}{if \code{TRUE}, returns only the optimal half-length;
 default is \code{FALSE}.}
 }
 \value{
-returns a list with the confidence interval (\code{ci}), the standard deviation
-of the estimator (\code{sd}), and the bandwidths used for the treated observations and
-the control observations (\code{h.t} and \code{h.c})
+returns a list with the confidence interval (\code{ci}),
+the standard deviation #' of the estimator (\code{sd}),
+and the bandwidths used for the treated observations and the control
+observations (\code{h.t} and \code{h.c})
 }
 \description{
 Calculates the minimax confidence interval.
