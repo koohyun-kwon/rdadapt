@@ -138,14 +138,15 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 #' alpha = 0.05)
 CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
                           se.method = c("nn", "supplied", "nn.test"),
-                          se.init = c("Silverman", "nn", "supplied", "supp.sep", "S.test"),
+                          se.init = c("Silverman", "nn", "supplied", "supp.sep",
+                                      "S.test"),
                           t.dir = c("left", "right"),
-                          alpha, N = 3, sigma_t, sigma_c, sigma_t.init, sigma_c.init,
-                          opt_b = NULL,
-                          min_half_length = NULL, maxb.const = 10, Prov.Plot = FALSE,
-                          len.return = FALSE) {
+                          alpha, N = 3, sigma_t, sigma_c,
+                          sigma_t.init, sigma_c.init,
+                          opt_b = NULL, min_half_length = NULL, maxb.const = 10,
+                          Prov.Plot = FALSE, len.return = FALSE) {
 
-  # Convert running variable data into matrices
+  # For case with d = 1, Xt & Xc might be vector, not matrix
   if(!is.matrix(Xt)) Xt <- matrix(Xt, ncol = 1)
   if(!is.matrix(Xc)) Xc <- matrix(Xc, ncol = 1)
 
@@ -153,23 +154,24 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
   se.init = match.arg(se.init)
   t.dir = match.arg(t.dir)
 
-  # The sorting process is necessary due to the way variance estimation functions work
-  # Only supports d = 1 case
+  # The sorting process is necessary due to the way variance estimation
+  # functions work (Only supports d = 1 case)
   if(ncol(Xt) == 1){
     sorted.t <- sort(Xt, index.return = T)
     sorted.c <- sort(Xc, index.return = T)
-
     Xt <- matrix(sorted.t$x, ncol = 1)
     Xc <- matrix(sorted.c$x, ncol = 1)
+
+    # Y indexes should match the ones for X
     Yt <- Yt[sorted.t$ix]
     Yc <- Yc[sorted.c$ix]
 
+    # Sigma indexes should match the ones for X
     if(!missing(sigma_t) & !missing(sigma_c)){
 
       sigma_t <- sigma_t[sorted.t$ix]
       sigma_c <- sigma_c[sorted.c$ix]
     }
-
     if(!missing(sigma_t.init) & !missing(sigma_c.init)){
 
       sigma_t.init <- sigma_t.init[sorted.t$ix]
@@ -177,33 +179,33 @@ CI_minimax_RD <- function(Yt, Yc, Xt, Xc, C_max, mon_ind,
     }
   }
 
-  if(se.init == "supplied"){
+  if(se.init != "supplied"){
+    # Check whether this part is documented somewhere
+    if(se.init == "Silverman"){
 
-    sigma_t.init <- sigma_t
-    sigma_c.init <- sigma_c
+      if(ncol(Xt) > 1) stop("Multi-dimension not supported for now")
 
-  }else if(se.init == "Silverman"){
+      sigma.init <- sigmaSvm(Xt, Xc, Yt, Yc, t.dir)
+      sigma_t.init <- sigma.init$sigma.t
+      sigma_c.init <- sigma.init$sigma.c
 
-    if(ncol(Xt) > 1) stop("Multi-dimension not supported for now")
+    }else if(se.init == "nn"){
 
-    sigma.init <- sigmaSvm(Xt, Xc, Yt, Yc, t.dir)
-    sigma_t.init <- sigma.init$sigma.t
-    sigma_c.init <- sigma.init$sigma.c
+      if(ncol(Xt) > 1) stop("Multi-dimension not supported for now")
 
-  }else if(se.init == "nn"){
+      # Currently testing whether it works (so is the test done?)
+      sigma.init <- sigmaNN(Xt, Xc, Yt, Yc, t.dir)
+      sigma_t.init <- sigma.init$sigma.t
+      sigma_c.init <- sigma.init$sigma.c
 
-    if(ncol(Xt) > 1) stop("Multi-dimension not supported for now")
+    # What is this doing? - Silverman's rule for multiple variable
+    # The variance estimation function is still under test
+    }else if(se.init == "S.test"){
 
-    # Currently testing whether it works
-    sigma.init <- sigmaNN(Xt, Xc, Yt, Yc, t.dir)
-    sigma_t.init <- sigma.init$sigma.t
-    sigma_c.init <- sigma.init$sigma.c
-
-  }else if(se.init == "S.test"){
-
-    sigma.init <- sigmaSvm.test(Xt, Xc, Yt, Yc)
-    sigma_t.init <- sigma.init$sigma.t
-    sigma_c.init <- sigma.init$sigma.c
+      sigma.init <- sigmaSvm.test(Xt, Xc, Yt, Yc)
+      sigma_t.init <- sigma.init$sigma.t
+      sigma_c.init <- sigma.init$sigma.c
+    }
   }
 
   if(is.null(opt_b) | is.null(min_half_length)){
