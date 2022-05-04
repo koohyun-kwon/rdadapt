@@ -111,14 +111,12 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 #'
 #' @export
 #'
-#' @examples n <- 500
-#' d <- 2
-#' X <- matrix(rnorm(n * d), nrow = n, ncol = d)
+#' @examples X <- matrix(rnorm(500 * 2), nrow = 500, ncol = 2)
 #' tind <- X[, 1] > 0 & X[, 2] > 0
 #' Xt <- X[tind == 1, ,drop = FALSE]
 #' Xc <- X[tind == 0, ,drop = FALSE]
 #' mon_ind <- c(1, 2)
-#' sigma <- rnorm(n)^2 + 1
+#' sigma <- rnorm(500)^2 + 1
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' Yt <- 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
@@ -126,12 +124,12 @@ CI_length_RD <- function(b, C, Xt, Xc, mon_ind, sigma_t , sigma_c, alpha) {
 #' C_max <- 1
 #' CI_minimax_RD(Yt, Yc, Xt, Xc, C_max, mon_ind, "nn.test", "S.test", alpha = 0.05)
 #' d <- 1
-#' X <- rnorm(n)
+#' X <- rnorm(500)
 #' tind <- X < 0
 #' Xt <- X[tind == 1]
 #' Xc <- X[tind == 0]
 #' mon_ind <- 1
-#' sigma <- rep(1, n)
+#' sigma <- rep(1, 500)
 #' sigma_t <- sigma[tind == 1]
 #' sigma_c <- sigma[tind == 0]
 #' Yt <- 1 + rnorm(length(sigma_t), mean = 0, sd = sigma_t)
